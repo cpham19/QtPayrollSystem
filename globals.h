@@ -1,11 +1,6 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-#include "payrollsystem.h"
+extern int counter;
 
-using namespace std;
-
-extern PayrollSystem *ps;
-extern int id;
-
-#endif
+#endif // GLOBALS_H

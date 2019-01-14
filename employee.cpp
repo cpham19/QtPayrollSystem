@@ -58,6 +58,10 @@ void Employee::setGender(QString g) {
     gender = g;
 }
 
+void Employee::setJobPosition(QString position) {
+    jobPosition = position;
+}
+
 void Employee::setStreetAddress(QString address) {
     streetAddress = address;
 }

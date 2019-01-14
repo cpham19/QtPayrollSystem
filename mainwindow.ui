@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>513</width>
-    <height>565</height>
+    <width>837</width>
+    <height>580</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,207 +16,14 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QTabWidget" name="tabWidget">
-        <property name="tabShape">
-         <enum>QTabWidget::Rounded</enum>
-        </property>
-        <property name="currentIndex">
-         <number>1</number>
-        </property>
-        <property name="documentMode">
-         <bool>false</bool>
-        </property>
-        <widget class="QWidget" name="OverviewTab">
-         <attribute name="title">
-          <string>Overview</string>
-         </attribute>
-         <widget class="QWidget" name="horizontalLayoutWidget">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>10</y>
-            <width>160</width>
-            <height>80</height>
-           </rect>
-          </property>
-          <layout class="QHBoxLayout" name="horizontalLayout"/>
-         </widget>
-        </widget>
-        <widget class="QWidget" name="EmployeeTab">
-         <attribute name="title">
-          <string>Employee Tab</string>
-         </attribute>
-         <layout class="QGridLayout" name="gridLayout_4">
-          <item row="0" column="3">
-           <layout class="QVBoxLayout" name="verticalLayout">
-            <item>
-             <widget class="QListView" name="employeeListView">
-              <property name="editTriggers">
-               <set>QAbstractItemView::NoEditTriggers</set>
-              </property>
-              <property name="selectionMode">
-               <enum>QAbstractItemView::NoSelection</enum>
-              </property>
-              <property name="resizeMode">
-               <enum>QListView::Adjust</enum>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="0" column="0" colspan="3">
-           <widget class="QFrame" name="formFrame">
-            <property name="frameShape">
-             <enum>QFrame::Box</enum>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_3">
-             <item row="0" column="0">
-              <widget class="QLabel" name="firstNameLabel">
-               <property name="text">
-                <string>First Name</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="firstNameLineEdit"/>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="lastNameLabel">
-               <property name="text">
-                <string>Last Name</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="lastNameLineEdit"/>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="genderLabel">
-               <property name="text">
-                <string>Gender</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QComboBox" name="genderComboBox">
-               <item>
-                <property name="text">
-                 <string>Male</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Female</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="jobPositionLabel">
-               <property name="text">
-                <string>Job Position</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QLineEdit" name="jobPositionLineEdit"/>
-             </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="streetAddressLabel">
-               <property name="text">
-                <string>Street Address</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="1">
-              <widget class="QLineEdit" name="streetAddressLineEdit"/>
-             </item>
-             <item row="5" column="0">
-              <widget class="QLabel" name="cityLabel">
-               <property name="text">
-                <string>City</string>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="1">
-              <widget class="QLineEdit" name="cityLineEdit"/>
-             </item>
-             <item row="6" column="0">
-              <widget class="QLabel" name="stateLabel">
-               <property name="text">
-                <string>State</string>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="1">
-              <widget class="QLineEdit" name="stateLineEdit"/>
-             </item>
-             <item row="7" column="0">
-              <widget class="QLabel" name="zipcodeLabel">
-               <property name="text">
-                <string>Zipcode</string>
-               </property>
-              </widget>
-             </item>
-             <item row="7" column="1">
-              <widget class="QLineEdit" name="zipcodeLineEdit"/>
-             </item>
-             <item row="8" column="0">
-              <widget class="QLabel" name="hourlyWageLabel">
-               <property name="text">
-                <string>Hourly Wage</string>
-               </property>
-              </widget>
-             </item>
-             <item row="8" column="1">
-              <widget class="QLineEdit" name="hourlyWageLineEdit"/>
-             </item>
-             <item row="9" column="0">
-              <widget class="QLabel" name="numberOfHoursWorkedLabel">
-               <property name="text">
-                <string>Number Of Hours Worked</string>
-               </property>
-              </widget>
-             </item>
-             <item row="9" column="1">
-              <widget class="QLineEdit" name="numberOfHoursWorkedLineEdit"/>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="addButton">
-            <property name="text">
-             <string>Add</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QPushButton" name="removeButton">
-            <property name="text">
-             <string>Remove</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QPushButton" name="editButton">
-            <property name="text">
-             <string>Edit</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="tab_3">
-         <attribute name="title">
-          <string>Tab 3</string>
-         </attribute>
-        </widget>
-       </widget>
-      </item>
-     </layout>
+     <widget class="QTabWidget" name="companiesTabWidget">
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+      <property name="tabsClosable">
+       <bool>false</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -237,7 +44,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>513</width>
+     <width>837</width>
      <height>21</height>
     </rect>
    </property>
@@ -247,11 +54,23 @@
     </property>
     <addaction name="actionAuthor"/>
    </widget>
+   <widget class="QMenu" name="menuNew">
+    <property name="title">
+     <string>New</string>
+    </property>
+    <addaction name="actionNew_Company"/>
+   </widget>
+   <addaction name="menuNew"/>
    <addaction name="menuAbout"/>
   </widget>
   <action name="actionAuthor">
    <property name="text">
     <string>Author</string>
+   </property>
+  </action>
+  <action name="actionNew_Company">
+   <property name="text">
+    <string>New Company</string>
    </property>
   </action>
  </widget>
