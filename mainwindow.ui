@@ -14,65 +14,8 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QTabWidget" name="companiesTabWidget">
-      <property name="currentIndex">
-       <number>-1</number>
-      </property>
-      <property name="tabsClosable">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-   </layout>
+   <layout class="QGridLayout" name="gridLayout"/>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-  </widget>
-  <widget class="QStatusBar" name="statusBar"/>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>837</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuAbout">
-    <property name="title">
-     <string>About</string>
-    </property>
-    <addaction name="actionAuthor"/>
-   </widget>
-   <widget class="QMenu" name="menuNew">
-    <property name="title">
-     <string>New</string>
-    </property>
-    <addaction name="actionNew_Company"/>
-   </widget>
-   <addaction name="menuNew"/>
-   <addaction name="menuAbout"/>
-  </widget>
-  <action name="actionAuthor">
-   <property name="text">
-    <string>Author</string>
-   </property>
-  </action>
-  <action name="actionNew_Company">
-   <property name="text">
-    <string>New Company</string>
-   </property>
-  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

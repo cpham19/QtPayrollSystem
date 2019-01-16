@@ -1,18 +1,17 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+//#include "ui_mainwindow.h"
 #include "companytabwidget.h"
 #include "globals.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    QMainWindow(parent)
 {
-    ui->setupUi(this);
+    setupUi(this);
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    delete this;
 }
 
 void MainWindow::on_actionAuthor_triggered()
@@ -26,7 +25,10 @@ void MainWindow::on_actionAuthor_triggered()
 
 void MainWindow::on_actionNew_Company_triggered()
 {
-    CompanyTabWidget *company = new CompanyTabWidget(ui->companiesTabWidget);
+    CompanyTabWidget *company = new CompanyTabWidget(companiesTabWidget);
     counter++;
-    ui->companiesTabWidget->addTab(company, "Company #" + QString::number(counter));
+    QString name = "Company #" + QString::number(counter);
+    company->ps->setNameOfCompany(name);
+    companiesTabWidget->addTab(company, name);
+    companiesTabWidget->setStyleSheet("QTabBar::tab { height: 50px; width: 100px;}");
 }

@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QGridLayout>
+#include <QHBoxLayout>
 #include <QGroupBox>
 #include <QComboBox>
 #include <QListView>
@@ -13,6 +14,9 @@
 #include <QAbstractItemView>
 #include <QPushButton>
 #include <QModelIndex>
+#include <QTableView>
+#include <QStandardItemModel>
+#include <QHeaderView>
 #include "payrollsystem.h"
 
 class CompanyTabWidget : public QTabWidget
@@ -21,16 +25,19 @@ class CompanyTabWidget : public QTabWidget
 
 public:
     CompanyTabWidget(QWidget *parent = nullptr);
-    void initialize();
+    void initializeData();
     void createOverviewTab();
     void createEmployeeTab();
+    void createEmployeeTableTab();
     void setUpValidators();
     void refreshEmployeeListView();
-    void clearForms();
+    void refreshEmployeeTable();
 
+    // Overview Tab
     QGroupBox *overviewGroupBox;
-    QGroupBox *employeeGroupBox;
 
+    // Employee Tab
+    QGroupBox *employeeGroupBox;
     QLineEdit *firstNameLineEdit;
     QLineEdit *lastNameLineEdit;
     QComboBox *genderComboBox;
@@ -42,10 +49,15 @@ public:
     QLineEdit *hourlyWageLineEdit;
     QLineEdit *numberOfHoursLineEdit;
     QListView *employeeListView;
-
     QPushButton *addButton;
     QPushButton *editButton;
     QPushButton *removeButton;
+    QPushButton *clearButton;
+    QStandardItemModel *model;
+
+    // Employee Table Tab
+    QGroupBox *tableGroupBox;
+    QTableView *employeeTableView;
 
     PayrollSystem *ps;
     int id;
@@ -60,6 +72,7 @@ private slots:
     void removeEmployee();
     void tabChanged(int index);
     void employeeListViewClicked(const QModelIndex &index);
+    void clearForms();
 
 private:
 
