@@ -1,32 +1,42 @@
 #include "companytabwidget.h"
 
-CompanyTabWidget::CompanyTabWidget(QWidget *parent): QTabWidget(parent) {
-    initializeData();
+CompanyTabWidget::CompanyTabWidget(QWidget *parent, QString name): QTabWidget(parent) {
+    initializeData(name);
     createOverviewTab();
     createEmployeeTab();
     createEmployeeTableTab();
-    setUpValidators();
-    refreshEmployeeListView();
-    refreshEmployeeTable();
 }
 
-void CompanyTabWidget::initializeData() {
-    id = 5;
+void CompanyTabWidget::initializeData(QString name) {
+    id = 10;
     ps = new PayrollSystem();
-    QString companyName = ps->getNameOfCompany();
-    this->setTabText(this->currentIndex(), companyName);
+    ps->setNameOfCompany(name);
     this->currentChanged(this->currentIndex());
     ps->addEmployee("E1", "Calvin", "Pham", "Male", "Software Engineer", "1234 Fake Street", "Fake City", "California", "12345", 40.5, 40);
     ps->addEmployee("E2", "Paul", "French", "Male", "Software Engineer", "1234 Fake Street", "Fake City", "California", "12316", 12, 45);
+    ps->addEmployee("E3", "Jaime", "Borunda", "Male", "Software Engineer", "1234 Fake Street", "Fake City", "California", "12316", 20, 10);
+    ps->addEmployee("E4", "Leonard", "Obay", "Male", "Software Engineer", "1234 Fake Street", "Fake City", "California", "12316", 25, 30);
+    ps->addEmployee("E5", "Rolf", "Castro", "Male", "Software Engineer", "1234 Fake Street", "Fake City", "California", "12316", 30, 15);
+    ps->addEmployee("E6", "Albert", "Tan", "Male", "Software Engineer", "1234 Fake Street", "Fake City", "California", "12316", 35, 10);
 
     this->setStyleSheet("QTabBar::tab { height: 50px; width: 100px;}");
 }
 
 void CompanyTabWidget::createOverviewTab() {
     overviewGroupBox = new QGroupBox("Company Info");
-    QGridLayout *overviewLayout = new QGridLayout();
+    overviewLayout = new QGridLayout();
 
+    nameOfCompanyLabel = new QLabel();
+    nameOfCompanyLabel->setText("Company Name: " + ps->getNameOfCompany());
+    overviewLayout->addWidget(nameOfCompanyLabel, 0, 0);
 
+    QLabel *numberOfEmployeesLabel = new QLabel();
+    numberOfEmployeesLabel->setText("Number of Employees: " + QString::number((int) ps->getPayrollList().size()));
+    overviewLayout->addWidget(numberOfEmployeesLabel, 1, 0);
+
+    QLabel *totalAmountPaidLabel = new QLabel();
+    totalAmountPaidLabel->setText("Total Amount Paid: $" + QString::number(ps->getTotalAmount()));
+    overviewLayout->addWidget(totalAmountPaidLabel, 2, 0);
 
     overviewGroupBox->setLayout(overviewLayout);
     this->addTab(overviewGroupBox, "Overview");
@@ -34,9 +44,30 @@ void CompanyTabWidget::createOverviewTab() {
 
 void CompanyTabWidget::createEmployeeTab() {
     employeeGroupBox = new QGroupBox(tr("Add, Edit, or Remove Employee"));
+    employeeLayout = new QGridLayout();
 
-    QGridLayout *employeeLayout = new QGridLayout();
+    setUpEmployeeInputs();
+    setUpValidators();
+    setUpEmployeeListView();
 
+    employeeGroupBox->setLayout(employeeLayout);
+
+    connect(this, SIGNAL(currentChanged(int)), SLOT(tabChanged(int)));
+    this->addTab(employeeGroupBox, "CRUD");
+}
+
+void CompanyTabWidget::createEmployeeTableTab() {
+    tableGroupBox = new QGroupBox("Employees");
+    QGridLayout *tableLayout = new QGridLayout();
+
+    setUpEmployeeTable();
+
+    tableLayout->addWidget(employeeTableView);
+    tableGroupBox->setLayout(tableLayout);
+    this->addTab(tableGroupBox, "Employees");
+}
+
+void CompanyTabWidget::setUpEmployeeInputs() {
     QLabel *firstNameLabel = new QLabel();
     firstNameLabel->setText("First Name");
     firstNameLineEdit = new QLineEdit();
@@ -109,12 +140,6 @@ void CompanyTabWidget::createEmployeeTab() {
     employeeLayout->addWidget(numberOfHoursLabel, 9, 0);
     employeeLayout->addWidget(numberOfHoursLineEdit, 9, 1);
 
-    employeeListView = new QListView();
-    employeeListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    connect(employeeListView, SIGNAL(clicked(QModelIndex)), this, SLOT(employeeListViewClicked(QModelIndex)));
-    // 0 is the starting row, 4 is the starting column, 10 is the length (top to bottom), 8 is width (left to right)
-    employeeLayout->addWidget(employeeListView, 0, 4, 10, 8);
-
     addButton = new QPushButton("Add");
     connect(addButton, SIGNAL (clicked()), SLOT (addEmployee()));
 
@@ -127,7 +152,7 @@ void CompanyTabWidget::createEmployeeTab() {
     clearButton = new QPushButton("Clear form");
     connect(clearButton, SIGNAL (clicked()), SLOT (clearForms()));
 
-    QHBoxLayout *buttonLayout = new QHBoxLayout();
+    buttonLayout = new QHBoxLayout();
 
     buttonLayout->addWidget(addButton);
     buttonLayout->addWidget(clearButton);
@@ -135,25 +160,6 @@ void CompanyTabWidget::createEmployeeTab() {
     buttonLayout->addWidget(removeButton);
 
     employeeLayout->addLayout(buttonLayout, 10, 0, 1, 2);
-
-    employeeGroupBox->setLayout(employeeLayout);
-
-    connect(this, SIGNAL(currentChanged(int)), SLOT(tabChanged(int)));
-    this->addTab(employeeGroupBox, "CRUD");
-}
-
-void CompanyTabWidget::createEmployeeTableTab() {
-    tableGroupBox = new QGroupBox("Employees");
-    QGridLayout *tableLayout = new QGridLayout();
-
-    employeeTableView = new QTableView();
-    employeeTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    employeeTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-    refreshEmployeeTable();
-    tableLayout->addWidget(employeeTableView);
-    tableGroupBox->setLayout(tableLayout);
-    this->addTab(tableGroupBox, "Employees");
 }
 
 void CompanyTabWidget::addEmployee() {
@@ -172,8 +178,12 @@ void CompanyTabWidget::addEmployee() {
     ps->addEmployee(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
     id++;
 
-    refreshEmployeeListView();
-    refreshEmployeeTable();
+    listOfListViewModel = ps->getStringListOfEmployees();
+    listViewModel->setStringList(listOfListViewModel);
+
+    tableViewModel = ps->getStandardItemModelOfEmployees();
+    employeeTableView->setModel(tableViewModel);
+
     clearForms();
 }
 
@@ -187,72 +197,27 @@ void CompanyTabWidget::setUpValidators() {
     zipcodeLineEdit->setValidator(zipcodeValidator);
 }
 
-void CompanyTabWidget::refreshEmployeeListView() {
-    QStringListModel *model = new QStringListModel();
-    QStringList list = ps->getStringListOfEmployees();
-    model->setStringList(list);
-    employeeListView->setModel(model);
+void CompanyTabWidget::setUpEmployeeListView() {
+    employeeListView = new QListView();
+    listViewModel = new QStringListModel();
+
+    employeeListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    connect(employeeListView, SIGNAL(clicked(QModelIndex)), this, SLOT(employeeListViewClicked(QModelIndex)));
+
+    listOfListViewModel = ps->getStringListOfEmployees();
+    listViewModel->setStringList(listOfListViewModel);
+    employeeListView->setModel(listViewModel);
+
+    // 0 is the starting row, 4 is the starting column, 10 is the length (top to bottom), 8 is width (left to right)
+    employeeLayout->addWidget(employeeListView, 0, 4, 10, 8);
 }
 
-void CompanyTabWidget::refreshEmployeeTable() {
-    model = new QStandardItemModel((int) ps->getPayrollList().size(), 11);
-    model->setHeaderData(0, Qt::Horizontal, QObject::tr("Employee ID"));
-    model->setHeaderData(1, Qt::Horizontal, QObject::tr("First Name"));
-    model->setHeaderData(2, Qt::Horizontal, QObject::tr("Last Name"));
-    model->setHeaderData(3, Qt::Horizontal, QObject::tr("Gender"));
-    model->setHeaderData(4, Qt::Horizontal, QObject::tr("Job Position"));
-    model->setHeaderData(5, Qt::Horizontal, QObject::tr("Street Address"));
-    model->setHeaderData(6, Qt::Horizontal, QObject::tr("City"));
-    model->setHeaderData(7, Qt::Horizontal, QObject::tr("State"));
-    model->setHeaderData(8, Qt::Horizontal, QObject::tr("Zipcode"));
-    model->setHeaderData(9, Qt::Horizontal, QObject::tr("Hourly Wage"));
-    model->setHeaderData(10, Qt::Horizontal, QObject::tr("Hours Worked"));
-
-    for (int row = 0; row < (int) ps->getPayrollList().size(); row++) {
-        Employee e = ps->getPayrollList()[row];
-        for (int col = 0; col < 11; col++) {
-            QModelIndex index = model->index(row,col,QModelIndex());
-            switch(col) {
-                case 0:
-                    model->setData(index, e.getEmployeeId());
-                    break;
-                case 1:
-                    model->setData(index, e.getFirstName());
-                    break;
-                case 2:
-                    model->setData(index, e.getLastName());
-                    break;
-                case 3:
-                    model->setData(index, e.getGender());
-                    break;
-                case 4:
-                    model->setData(index, e.getJobPosition());
-                    break;
-                case 5:
-                    model->setData(index, e.getStreetAddress());
-                    break;
-                case 6:
-                    model->setData(index, e.getCity());
-                    break;
-                case 7:
-                    model->setData(index, e.getState());
-                    break;
-                case 8:
-                    model->setData(index, e.getZipcode());
-                    break;
-                case 9:
-                    model->setData(index, e.getHourlyWage());
-                    break;
-                case 10:
-                    model->setData(index, e.getNumberOfHours());
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    employeeTableView->setModel(model);
+void CompanyTabWidget::setUpEmployeeTable() {
+    employeeTableView = new QTableView();
+    employeeTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    employeeTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    tableViewModel = ps->getStandardItemModelOfEmployees();
+    employeeTableView->setModel(tableViewModel);
 }
 
 void CompanyTabWidget::employeeListViewClicked(const QModelIndex &index)
@@ -273,11 +238,10 @@ void CompanyTabWidget::employeeListViewClicked(const QModelIndex &index)
     numberOfHoursLineEdit->setText(QString::number(employee.getNumberOfHours()));
 }
 
+
 void CompanyTabWidget::tabChanged(int index)
 {
-    if (index == 1) {
-        refreshEmployeeListView();
-    }
+
 }
 
 
@@ -294,13 +258,18 @@ void CompanyTabWidget::removeEmployee()
         return;
     }
     const QModelIndex &index = employeeListView->currentIndex();
+    const int row = employeeListView->currentIndex().row();
     QString employeeText = index.data(Qt::DisplayRole).toString();
-    QStringList employeeInfo = employeeText.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+    QString employeeId = (employeeText.split(QRegExp("\\s+"), QString::SkipEmptyParts))[0];
 
-    ps->removeEmployeeById(employeeInfo[0]);
+    ps->removeEmployeeById(employeeId);
 
-    refreshEmployeeListView();
-    refreshEmployeeTable();
+    listOfListViewModel = ps->getStringListOfEmployees();
+    listViewModel->setStringList(listOfListViewModel);
+
+    tableViewModel = ps->getStandardItemModelOfEmployees();
+    employeeTableView->setModel(tableViewModel);
+
     clearForms();
 }
 
@@ -310,6 +279,7 @@ void CompanyTabWidget::editEmployee()
         return;
     }
     const QModelIndex &index = employeeListView->currentIndex();
+    const int row = employeeListView->currentIndex().row();
     QString employeeText = index.data(Qt::DisplayRole).toString();
     QStringList employeeInfo = employeeText.split(QRegExp("\\s+"), QString::SkipEmptyParts);
 
@@ -326,7 +296,12 @@ void CompanyTabWidget::editEmployee()
     int numberOfHours = numberOfHoursLineEdit->text().toInt();
 
     ps->editEmployee(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
-    refreshEmployeeListView();
-    refreshEmployeeTable();
+
+    listOfListViewModel = ps->getStringListOfEmployees();
+    listViewModel->setStringList(listOfListViewModel);
+
+    tableViewModel = ps->getStandardItemModelOfEmployees();
+    employeeTableView->setModel(tableViewModel);
+
     clearForms();
 }

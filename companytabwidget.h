@@ -16,7 +16,9 @@
 #include <QModelIndex>
 #include <QTableView>
 #include <QStandardItemModel>
+#include <QTableWidgetItem>
 #include <QHeaderView>
+#include <QDebug>
 #include "payrollsystem.h"
 
 class CompanyTabWidget : public QTabWidget
@@ -24,20 +26,24 @@ class CompanyTabWidget : public QTabWidget
     Q_OBJECT
 
 public:
-    CompanyTabWidget(QWidget *parent = nullptr);
-    void initializeData();
+    CompanyTabWidget(QWidget *parent = nullptr, QString name = "");
+    void initializeData(QString name);
     void createOverviewTab();
     void createEmployeeTab();
     void createEmployeeTableTab();
     void setUpValidators();
-    void refreshEmployeeListView();
-    void refreshEmployeeTable();
+    void setUpEmployeeListView();
+    void setUpEmployeeInputs();
+    void setUpEmployeeTable();
 
     // Overview Tab
     QGroupBox *overviewGroupBox;
+    QGridLayout *overviewLayout;
+    QLabel *nameOfCompanyLabel;
 
     // Employee Tab
     QGroupBox *employeeGroupBox;
+    QGridLayout *employeeLayout;
     QLineEdit *firstNameLineEdit;
     QLineEdit *lastNameLineEdit;
     QComboBox *genderComboBox;
@@ -48,16 +54,21 @@ public:
     QLineEdit *zipcodeLineEdit;
     QLineEdit *hourlyWageLineEdit;
     QLineEdit *numberOfHoursLineEdit;
+
     QListView *employeeListView;
+    QStringListModel *listViewModel;
+    QStringList listOfListViewModel;
+
+    QHBoxLayout *buttonLayout;
     QPushButton *addButton;
     QPushButton *editButton;
     QPushButton *removeButton;
     QPushButton *clearButton;
-    QStandardItemModel *model;
 
     // Employee Table Tab
     QGroupBox *tableGroupBox;
     QTableView *employeeTableView;
+    QStandardItemModel *tableViewModel;
 
     PayrollSystem *ps;
     int id;

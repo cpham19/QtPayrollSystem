@@ -10,8 +10,16 @@
 #include <QMainWindow>
 #include <QMenu>
 #include <QMenuBar>
+
 #include <QTabWidget>
+#include <QTabBar>
+#include <QInputDialog>
+#include <QMouseEvent>
+
 #include <QWidget>
+#include <QDialogButtonBox>
+#include <QDialog>
+#include <QDebug>
 
 using namespace std;
 
@@ -54,9 +62,13 @@ public:
            gridLayout->setContentsMargins(11, 11, 11, 11);
            gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
 
+           // Main Tab Widget and Tab Bar
+           //mainTabBar = new MainTabBar();
            companiesTabWidget = new QTabWidget(centralWidget);
            companiesTabWidget->setObjectName(QString::fromUtf8("companiesTabWidget"));
            companiesTabWidget->setTabsClosable(false);
+           companiesTabWidget->setCurrentIndex(-1);
+           connect(companiesTabWidget, &QTabWidget::tabBarDoubleClicked, this, &MainWindow::onTabBarDoubleClicked);
 
            gridLayout->addWidget(companiesTabWidget, 0, 0, 1, 1);
 
@@ -78,9 +90,6 @@ public:
 
            retranslateUi(MainWindow);
 
-           companiesTabWidget->setCurrentIndex(-1);
-
-
            QMetaObject::connectSlotsByName(MainWindow);
        } // setupUi
 
@@ -96,6 +105,7 @@ public:
 private slots:
     void on_actionAuthor_triggered();
     void on_actionNew_Company_triggered();
+    void onTabBarDoubleClicked(int index);
 };
 
 #endif // MAINWINDOW_H

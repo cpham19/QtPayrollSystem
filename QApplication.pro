@@ -31,8 +31,7 @@ SOURCES += \
     paycheck.cpp \
     payrollsystem.cpp \
     companytabwidget.cpp \
-    globals.cpp \
-    employeetab.cpp
+    globals.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -40,8 +39,7 @@ HEADERS += \
     paycheck.h \
     payrollsystem.h \
     companytabwidget.h \
-    globals.h \
-    employeetab.h
+    globals.h
 
 FORMS += \
         mainwindow.ui
