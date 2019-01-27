@@ -13,6 +13,7 @@ using namespace std;
 class PayrollSystem {
     public:
         PayrollSystem();
+        int getCompanyId() const;
         QString getNameOfCompany() const;
         void setNameOfCompany(QString name);
         void addEmployee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, double wage, int hours);
@@ -22,14 +23,16 @@ class PayrollSystem {
         double getTotalAmount() const;
         void setTotalAmount(double amount);
         Employee getEmployeeById(QString id);
-        QStringList getStringListOfEmployees() const;
-        QStandardItemModel *getStandardItemModelOfEmployees() const;
+        QStringList getEmployeesStringList() const;
+        QStandardItemModel *getEmployeesModel() const;
+        QStandardItemModel *getPaychecksModel() const;
 
-        void issuePaycheck();
+        void issuePaychecks();
         vector<Employee> getPayrollList() const;
 
     private:
         QString nameOfCompany;
+        int companyId;
         vector<Employee> payrollList;
         double totalAmount;
 };

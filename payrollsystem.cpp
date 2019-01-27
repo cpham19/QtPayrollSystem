@@ -61,7 +61,7 @@ Employee PayrollSystem::getEmployeeById(QString id) {
     }
 }
 
-QStringList PayrollSystem::getStringListOfEmployees() const{
+QStringList PayrollSystem::getEmployeesStringList() const{
     QStringList list;
 
     for (Employee e: payrollList) {
@@ -71,8 +71,11 @@ QStringList PayrollSystem::getStringListOfEmployees() const{
     return list;
 }
 
-QStandardItemModel* PayrollSystem::getStandardItemModelOfEmployees() const{
-    QStandardItemModel *tableViewModel = new QStandardItemModel((int) getPayrollList().size(), 11);
+QStandardItemModel* PayrollSystem::getEmployeesModel() const{
+    const int COLUMNS = 11;
+    const int ROWS = (int) getPayrollList().size();
+
+    QStandardItemModel *tableViewModel = new QStandardItemModel(ROWS, COLUMNS);
     tableViewModel->setHeaderData(0, Qt::Horizontal, QObject::tr("Employee ID"));
     tableViewModel->setHeaderData(1, Qt::Horizontal, QObject::tr("First Name"));
     tableViewModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Last Name"));
@@ -85,9 +88,9 @@ QStandardItemModel* PayrollSystem::getStandardItemModelOfEmployees() const{
     tableViewModel->setHeaderData(9, Qt::Horizontal, QObject::tr("Hourly Wage"));
     tableViewModel->setHeaderData(10, Qt::Horizontal, QObject::tr("Hours Worked"));
 
-    for (int row = 0; row < (int) getPayrollList().size(); row++) {
+    for (int row = 0; row < ROWS; row++) {
         Employee e = getPayrollList()[row];
-        for (int col = 0; col < 11; col++) {
+        for (int col = 0; col < COLUMNS; col++) {
             QModelIndex index = tableViewModel->index(row,col,QModelIndex());
             switch(col) {
                 case 0:
@@ -132,12 +135,52 @@ QStandardItemModel* PayrollSystem::getStandardItemModelOfEmployees() const{
     return tableViewModel;
 }
 
-void PayrollSystem::issuePaycheck() {
+QStandardItemModel* PayrollSystem::getPaychecksModel() const{
+    const int COLUMNS = 4;
+    const int ROWS = (int) getPayrollList().size();
+    QStandardItemModel *tableViewModel = new QStandardItemModel(ROWS, COLUMNS);
+    tableViewModel->setHeaderData(0, Qt::Horizontal, QObject::tr("Employee ID"));
+    tableViewModel->setHeaderData(1, Qt::Horizontal, QObject::tr("First Name"));
+    tableViewModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Last Name"));
+    tableViewModel->setHeaderData(3, Qt::Horizontal, QObject::tr("Amount To Be Paid ($)"));
+
+    for (int row = 0; row < ROWS; row++) {
+        Employee e = getPayrollList()[row];
+        Paycheck p = Paycheck(e.getEmployeeId(), e.getFirstName(), e.getLastName(), e.calcPay());
+        for (int col = 0; col < COLUMNS; col++) {
+            QModelIndex index = tableViewModel->index(row,col,QModelIndex());
+            switch(col) {
+                case 0:
+                    tableViewModel->setData(index, p.getEmployeeId());
+                    break;
+                case 1:
+                    tableViewModel->setData(index, p.getFirstName());
+                    break;
+                case 2:
+                    tableViewModel->setData(index, p.getLastName());
+                    break;
+                case 3:
+                    tableViewModel->setData(index, p.getPayCheckAmount());
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    return tableViewModel;
+}
+
+void PayrollSystem::issuePaychecks() {
     for (int i = 0; i < (int) payrollList.size(); i++) {
         Paycheck p = Paycheck(payrollList[i].getEmployeeId(), payrollList[i].getFirstName(), payrollList[i].getLastName(), payrollList[i].calcPay());
         totalAmount += p.getPayCheckAmount();
         payrollList[i].setNumberOfHours(0);
     }
+}
+
+int PayrollSystem::getCompanyId() const {
+    return companyId;
 }
 
 vector<Employee> PayrollSystem::getPayrollList() const {

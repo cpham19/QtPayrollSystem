@@ -34,7 +34,7 @@ SOURCES += \
     globals.cpp
 
 HEADERS += \
-        mainwindow.h \
+    mainwindow.h \
     employee.h \
     paycheck.h \
     payrollsystem.h \
@@ -43,6 +43,16 @@ HEADERS += \
 
 FORMS += \
         mainwindow.ui
+		
+OTHER_FILES += \
+	firstnames.txt \
+	lastnames.txt \
+	streets.txt \
+	streetsuffixes.txt \
+        cities.txt \
+	states.txt \ 
+	zipcodes.txt
+	
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

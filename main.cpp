@@ -1,6 +1,4 @@
 #include "mainwindow.h"
-#include <QApplication>
-#include <QString>
 
 using namespace std;
 

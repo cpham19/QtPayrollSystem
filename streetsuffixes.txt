@@ -1,0 +1,14 @@
+Avenue
+Boulevard
+Center
+Circle
+Court
+Drive
+Expressway
+Heights
+Highway
+Island
+Junction
+Lake
+Lane
+Mountain

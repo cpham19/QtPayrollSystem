@@ -1,23 +1,58 @@
 #include "companytabwidget.h"
+#include "globals.h"
 
 CompanyTabWidget::CompanyTabWidget(QWidget *parent, QString name): QTabWidget(parent) {
     initializeData(name);
     createOverviewTab();
     createEmployeeTab();
     createEmployeeTableTab();
+    createPayrollTab();
+}
+
+CompanyTabWidget::~CompanyTabWidget()
+{
+    delete this;
 }
 
 void CompanyTabWidget::initializeData(QString name) {
-    id = 10;
+    id = 50;
     ps = new PayrollSystem();
     ps->setNameOfCompany(name);
     this->currentChanged(this->currentIndex());
-    ps->addEmployee("E1", "Calvin", "Pham", "Male", "Software Engineer", "1234 Fake Street", "Fake City", "California", "12345", 40.5, 40);
-    ps->addEmployee("E2", "Paul", "French", "Male", "Software Engineer", "1234 Fake Street", "Fake City", "California", "12316", 12, 45);
-    ps->addEmployee("E3", "Jaime", "Borunda", "Male", "Software Engineer", "1234 Fake Street", "Fake City", "California", "12316", 20, 10);
-    ps->addEmployee("E4", "Leonard", "Obay", "Male", "Software Engineer", "1234 Fake Street", "Fake City", "California", "12316", 25, 30);
-    ps->addEmployee("E5", "Rolf", "Castro", "Male", "Software Engineer", "1234 Fake Street", "Fake City", "California", "12316", 30, 15);
-    ps->addEmployee("E6", "Albert", "Tan", "Male", "Software Engineer", "1234 Fake Street", "Fake City", "California", "12316", 35, 10);
+
+    // This will generate different seed for every new tab (apparently rand() is not good in modern times but I needed something to give me a new seed everytime I open a tab)
+    mt19937 generator(rand());
+    uniform_real_distribution<double> doubleDistribution(0.0,50.0);
+    uniform_int_distribution<int> intDistribution(1,40);
+
+    // Each distribution has a different size for each text file
+    uniform_int_distribution<int> firstNamesDistribution(0, firstNames.size() - 1);
+    uniform_int_distribution<int> lastNamesDistribution(0, lastNames.size() - 1);
+    uniform_int_distribution<int> streetsDistribution(0, streets.size() - 1);
+    uniform_int_distribution<int> streetSuffixesDistribution(0, streetSuffixes.size() - 1);
+    uniform_int_distribution<int> citiesDistribution(0, cities.size() - 1);
+    uniform_int_distribution<int> statesDistribution(0, states.size() - 1);
+    uniform_int_distribution<int> zipcodesDistribution(0, zipcodes.size() - 1);
+
+    // numbers between 1 and 40 (inclusive)
+    int numberOfEmployees = intDistribution(generator);
+
+    for (int i = 1; i <= numberOfEmployees; i++) {
+        mt19937 generator2(rand());
+        QString id = "E" + QString::number(i);
+        QString firstName = firstNames[firstNamesDistribution(generator2)];
+        QString lastName = lastNames[lastNamesDistribution(generator2)];
+        QString gender = "Male";
+        QString position = "Software Engineer";
+        QString street = streets[streetsDistribution(generator2)] + " " + streetSuffixes[streetSuffixesDistribution(generator)];
+        QString city = cities[citiesDistribution(generator2)];
+        QString state = states[statesDistribution(generator2)];
+        QString zipcode = zipcodes[zipcodesDistribution(generator2)];
+        double hourlyWage = doubleDistribution(generator2);
+        int numberOfHours =  intDistribution(generator2);
+
+        ps->addEmployee(id, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours);
+    }
 
     this->setStyleSheet("QTabBar::tab { height: 50px; width: 100px;}");
 }
@@ -30,11 +65,11 @@ void CompanyTabWidget::createOverviewTab() {
     nameOfCompanyLabel->setText("Company Name: " + ps->getNameOfCompany());
     overviewLayout->addWidget(nameOfCompanyLabel, 0, 0);
 
-    QLabel *numberOfEmployeesLabel = new QLabel();
+    numberOfEmployeesLabel = new QLabel();
     numberOfEmployeesLabel->setText("Number of Employees: " + QString::number((int) ps->getPayrollList().size()));
     overviewLayout->addWidget(numberOfEmployeesLabel, 1, 0);
 
-    QLabel *totalAmountPaidLabel = new QLabel();
+    totalAmountPaidLabel = new QLabel();
     totalAmountPaidLabel->setText("Total Amount Paid: $" + QString::number(ps->getTotalAmount()));
     overviewLayout->addWidget(totalAmountPaidLabel, 2, 0);
 
@@ -57,7 +92,7 @@ void CompanyTabWidget::createEmployeeTab() {
 }
 
 void CompanyTabWidget::createEmployeeTableTab() {
-    tableGroupBox = new QGroupBox("Employees");
+    tableGroupBox = new QGroupBox("List of Employees");
     QGridLayout *tableLayout = new QGridLayout();
 
     setUpEmployeeTable();
@@ -65,6 +100,21 @@ void CompanyTabWidget::createEmployeeTableTab() {
     tableLayout->addWidget(employeeTableView);
     tableGroupBox->setLayout(tableLayout);
     this->addTab(tableGroupBox, "Employees");
+}
+
+void CompanyTabWidget::createPayrollTab() {
+    payrollGroupBox = new QGroupBox("Paychecks");
+    QGridLayout *tableLayout = new QGridLayout();
+
+    setUpPayrollTable();
+
+    payButton = new QPushButton("Pay all");
+    connect(payButton, SIGNAL (clicked()), SLOT (payEmployees()));
+
+    tableLayout->addWidget(payrollTableView);
+    tableLayout->addWidget(payButton);
+    payrollGroupBox->setLayout(tableLayout);
+    this->addTab(payrollGroupBox, "Payroll");
 }
 
 void CompanyTabWidget::setUpEmployeeInputs() {
@@ -178,11 +228,7 @@ void CompanyTabWidget::addEmployee() {
     ps->addEmployee(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
     id++;
 
-    listOfListViewModel = ps->getStringListOfEmployees();
-    listViewModel->setStringList(listOfListViewModel);
-
-    tableViewModel = ps->getStandardItemModelOfEmployees();
-    employeeTableView->setModel(tableViewModel);
+    update();
 
     clearForms();
 }
@@ -204,7 +250,7 @@ void CompanyTabWidget::setUpEmployeeListView() {
     employeeListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     connect(employeeListView, SIGNAL(clicked(QModelIndex)), this, SLOT(employeeListViewClicked(QModelIndex)));
 
-    listOfListViewModel = ps->getStringListOfEmployees();
+    listOfListViewModel = ps->getEmployeesStringList();
     listViewModel->setStringList(listOfListViewModel);
     employeeListView->setModel(listViewModel);
 
@@ -216,8 +262,16 @@ void CompanyTabWidget::setUpEmployeeTable() {
     employeeTableView = new QTableView();
     employeeTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     employeeTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    tableViewModel = ps->getStandardItemModelOfEmployees();
+    tableViewModel = ps->getEmployeesModel();
     employeeTableView->setModel(tableViewModel);
+}
+
+void CompanyTabWidget::setUpPayrollTable() {
+    payrollTableView = new QTableView();
+    payrollTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    payrollTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    payrollViewModel = ps->getPaychecksModel();
+    payrollTableView->setModel(payrollViewModel);
 }
 
 void CompanyTabWidget::employeeListViewClicked(const QModelIndex &index)
@@ -264,11 +318,7 @@ void CompanyTabWidget::removeEmployee()
 
     ps->removeEmployeeById(employeeId);
 
-    listOfListViewModel = ps->getStringListOfEmployees();
-    listViewModel->setStringList(listOfListViewModel);
-
-    tableViewModel = ps->getStandardItemModelOfEmployees();
-    employeeTableView->setModel(tableViewModel);
+    update();
 
     clearForms();
 }
@@ -297,11 +347,27 @@ void CompanyTabWidget::editEmployee()
 
     ps->editEmployee(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
 
-    listOfListViewModel = ps->getStringListOfEmployees();
-    listViewModel->setStringList(listOfListViewModel);
-
-    tableViewModel = ps->getStandardItemModelOfEmployees();
-    employeeTableView->setModel(tableViewModel);
+    update();
 
     clearForms();
+}
+
+void CompanyTabWidget::update() {
+    numberOfEmployeesLabel->setText("Number of Employees: " + QString::number((int) ps->getPayrollList().size()));
+    totalAmountPaidLabel->setText("Total Amount Paid: $" + QString::number(ps->getTotalAmount()));
+
+    listOfListViewModel = ps->getEmployeesStringList();
+    listViewModel->setStringList(listOfListViewModel);
+
+    tableViewModel = ps->getEmployeesModel();
+    employeeTableView->setModel(tableViewModel);
+
+    payrollViewModel = ps->getPaychecksModel();
+    payrollTableView->setModel(payrollViewModel);
+}
+
+void CompanyTabWidget::payEmployees() {
+    ps->issuePaychecks();
+
+    update();
 }
