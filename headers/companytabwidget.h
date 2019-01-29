@@ -19,7 +19,11 @@
 #include <QTableWidgetItem>
 #include <QHeaderView>
 #include <QDebug>
+
 #include "payrollsystem.h"
+#include "employeestringlistmodel.h"
+#include "employeetablemodel.h"
+#include "payrolltablemodel.h"
 #include <cmath>
 #include <random>
 
@@ -64,8 +68,7 @@ public:
     QLineEdit *numberOfHoursLineEdit;
 
     QListView *employeeListView;
-    QStringListModel *listViewModel;
-    QStringList listOfListViewModel;
+    EmployeeStringListModel *listViewModel;
 
     QHBoxLayout *buttonLayout;
     QPushButton *addButton;
@@ -76,12 +79,12 @@ public:
     // Employee Table Tab
     QGroupBox *tableGroupBox;
     QTableView *employeeTableView;
-    QStandardItemModel *tableViewModel;
+    EmployeeTableModel *tableViewModel;
 
     // Payroll Tab
     QGroupBox *payrollGroupBox;
     QTableView *payrollTableView;
-    QStandardItemModel *payrollViewModel;
+    PayrollTableModel *payrollViewModel;
     QPushButton *payButton;
 
     PayrollSystem *ps;
@@ -101,6 +104,10 @@ private slots:
     void clearForms();
 
 private:
+    int timerId;
+
+protected:
+    void timerEvent(QTimerEvent *event);
 
 };
 

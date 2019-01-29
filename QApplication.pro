@@ -25,33 +25,40 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-    employee.cpp \
-    paycheck.cpp \
-    payrollsystem.cpp \
-    companytabwidget.cpp \
-    globals.cpp
+    sources/main.cpp \
+    sources/mainwindow.cpp \
+    sources/employee.cpp \
+    sources/paycheck.cpp \
+    sources/payrollsystem.cpp \
+    sources/companytabwidget.cpp \
+    sources/globals.cpp \
+    sources/employeestringlistmodel.cpp \
+    sources/employeetablemodel.cpp \
+    sources/payrolltablemodel.cpp
 
 HEADERS += \
-    mainwindow.h \
-    employee.h \
-    paycheck.h \
-    payrollsystem.h \
-    companytabwidget.h \
-    globals.h
+    headers/mainwindow.h \
+    headers/employee.h \
+    headers/paycheck.h \
+    headers/payrollsystem.h \
+    headers/companytabwidget.h \
+    headers/globals.h \
+    headers/employeestringlistmodel.h \
+    headers/employeetablemodel.h \
+    headers/payrolltablemodel.h
 
 FORMS += \
         mainwindow.ui
 		
 OTHER_FILES += \
-	firstnames.txt \
-	lastnames.txt \
-	streets.txt \
-	streetsuffixes.txt \
-        cities.txt \
-	states.txt \ 
-	zipcodes.txt
+        txt/firstnames.txt \
+        txt/lastnames.txt \
+        txt/jobs.txt \
+        txt/streets.txt \
+        txt/streetsuffixes.txt \
+        txt/cities.txt \
+        txt/states.txt \
+        txt/zipcodes.txt
 	
 
 # Default rules for deployment.

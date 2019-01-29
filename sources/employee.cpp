@@ -1,4 +1,4 @@
-#include "employee.h"
+#include "headers/employee.h"
 
 Employee::Employee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, double wage, int hours) : employeeId(id), firstName(fName), lastName(lName), gender(gender), jobPosition(position), streetAddress(address), city(city), state(state), zipcode(zipcode), hourlyWage(wage), numberOfHours(hours) {
 }

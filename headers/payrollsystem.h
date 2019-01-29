@@ -22,10 +22,9 @@ class PayrollSystem {
         void removeEmployeeById(QString id);
         double getTotalAmount() const;
         void setTotalAmount(double amount);
+        void incrementHoursOfEmployees();
         Employee getEmployeeById(QString id);
         QStringList getEmployeesStringList() const;
-        QStandardItemModel *getEmployeesModel() const;
-        QStandardItemModel *getPaychecksModel() const;
 
         void issuePaychecks();
         vector<Employee> getPayrollList() const;

@@ -9,8 +9,10 @@
 
 using namespace std;
 
-extern vector<QString> firstNames;
+extern vector<QString> maleFirstNames;
+extern vector <QString> femaleFirstNames;
 extern vector<QString> lastNames;
+extern vector<QString> jobs;
 extern vector<QString> streets;
 extern vector<QString> streetSuffixes;
 extern vector<QString> cities;

@@ -1,4 +1,4 @@
-#include "paycheck.h"
+#include "headers/paycheck.h"
 
 Paycheck::Paycheck(QString id, QString fName, QString lName, double pay) : employeeId(id), firstName(fName), lastName(lName), paycheckAmount(pay) {
 }
