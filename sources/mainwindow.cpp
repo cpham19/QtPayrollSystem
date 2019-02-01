@@ -1,6 +1,7 @@
 #include "headers/mainwindow.h"
 #include "headers/companytabwidget.h"
 #include "headers/globals.h"
+#include <algorithm>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)

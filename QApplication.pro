@@ -32,9 +32,7 @@ SOURCES += \
     sources/payrollsystem.cpp \
     sources/companytabwidget.cpp \
     sources/globals.cpp \
-    sources/employeestringlistmodel.cpp \
-    sources/employeetablemodel.cpp \
-    sources/payrolltablemodel.cpp
+    sources/employeetablemodel.cpp
 
 HEADERS += \
     headers/mainwindow.h \
@@ -43,9 +41,7 @@ HEADERS += \
     headers/payrollsystem.h \
     headers/companytabwidget.h \
     headers/globals.h \
-    headers/employeestringlistmodel.h \
-    headers/employeetablemodel.h \
-    headers/payrolltablemodel.h
+    headers/employeetablemodel.h
 
 FORMS += \
         mainwindow.ui

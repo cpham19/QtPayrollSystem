@@ -4,16 +4,14 @@
 CompanyTabWidget::CompanyTabWidget(QWidget *parent, QString name): QTabWidget(parent) {
     initializeData(name);
     createOverviewTab();
-    createEmployeeTab();
     createEmployeeTableTab();
-    createPayrollTab();
 
-    timerId = startTimer(1000);
+    //timerId = startTimer(1000);
 }
 
 CompanyTabWidget::~CompanyTabWidget()
 {
-    killTimer(timerId);
+    //killTimer(timerId);
     delete this;
 }
 
@@ -43,28 +41,27 @@ void CompanyTabWidget::initializeData(QString name) {
     int numberOfEmployees = numberOfEmployeesDistribution(generator);
 
     for (int i = 1; i <= numberOfEmployees; i++) {
-        mt19937 generator2(rand());
         QString id = "E" + QString::number(i);
         QString gender;
         QString firstName;
 
-        if ((int) genderDistribution(generator2) == 0 ) {
+        if ((int) genderDistribution(generator) == 0 ) {
             gender = "Male";
-            firstName = maleFirstNames[maleFirstNamesDistribution(generator2)];
+            firstName = maleFirstNames[maleFirstNamesDistribution(generator)];
         }
         else {
             gender = "Female";
-            firstName = femaleFirstNames[femaleFirstNamesDistribution(generator2)];
+            firstName = femaleFirstNames[femaleFirstNamesDistribution(generator)];
         }
 
-        QString lastName = lastNames[lastNamesDistribution(generator2)];
-        QString position = jobs[jobsDistribution(generator2)];
-        QString street = streets[streetsDistribution(generator2)] + " " + streetSuffixes[streetSuffixesDistribution(generator)];
-        QString city = cities[citiesDistribution(generator2)];
-        QString state = states[statesDistribution(generator2)];
-        QString zipcode = zipcodes[zipcodesDistribution(generator2)];
-        double hourlyWage = doubleDistribution(generator2);
-        int numberOfHours =  numberOfEmployeesDistribution(generator2);
+        QString lastName = lastNames[lastNamesDistribution(generator)];
+        QString position = jobs[jobsDistribution(generator)];
+        QString street = streets[streetsDistribution(generator)] + " " + streetSuffixes[streetSuffixesDistribution(generator)];
+        QString city = cities[citiesDistribution(generator)];
+        QString state = states[statesDistribution(generator)];
+        QString zipcode = zipcodes[zipcodesDistribution(generator)];
+        double hourlyWage = QString::number(doubleDistribution(generator), 'f', 2).toDouble();
+        int numberOfHours =  numberOfEmployeesDistribution(generator);
 
         ps->addEmployee(id, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours);
     }
@@ -92,223 +89,56 @@ void CompanyTabWidget::createOverviewTab() {
     this->addTab(overviewGroupBox, "Overview");
 }
 
-void CompanyTabWidget::createEmployeeTab() {
-    employeeGroupBox = new QGroupBox(tr("Add, Edit, or Remove Employee"));
-    employeeLayout = new QGridLayout();
-
-    setUpEmployeeInputs();
-    setUpValidators();
-    setUpEmployeeListView();
-
-    employeeGroupBox->setLayout(employeeLayout);
-
-    connect(this, SIGNAL(currentChanged(int)), SLOT(tabChanged(int)));
-    this->addTab(employeeGroupBox, "CRUD");
-}
-
 void CompanyTabWidget::createEmployeeTableTab() {
     tableGroupBox = new QGroupBox("List of Employees");
     QGridLayout *tableLayout = new QGridLayout();
 
     setUpEmployeeTable();
 
-    tableLayout->addWidget(employeeTableView);
+    addButton = new QPushButton("Add");
+    removeButton = new QPushButton("Remove");
+    payAllButton = new QPushButton("Pay All");
+
+    connect(addButton, SIGNAL (clicked()), SLOT (toggleAddDialog()));
+    connect(employeeTableView,SIGNAL(doubleClicked(const QModelIndex&)), SLOT (toggleEditDialog()));
+    connect(removeButton, SIGNAL (clicked()), SLOT (removeEmployee()));
+    connect(payAllButton, SIGNAL (clicked()), SLOT (payAllEmployees()));
+
+    tableLayout->addWidget(employeeTableView, 0, 0, 10, 3);
+    tableLayout->addWidget(addButton, 11, 0);
+    tableLayout->addWidget(removeButton, 11, 1);
+    tableLayout->addWidget(payAllButton, 11, 2);
+
     tableGroupBox->setLayout(tableLayout);
     this->addTab(tableGroupBox, "Employees");
-}
-
-void CompanyTabWidget::createPayrollTab() {
-    payrollGroupBox = new QGroupBox("Paychecks");
-    QGridLayout *tableLayout = new QGridLayout();
-
-    setUpPayrollTable();
-
-    payButton = new QPushButton("Pay all");
-    connect(payButton, SIGNAL (clicked()), SLOT (payEmployees()));
-
-    tableLayout->addWidget(payrollTableView);
-    tableLayout->addWidget(payButton);
-    payrollGroupBox->setLayout(tableLayout);
-    this->addTab(payrollGroupBox, "Payroll");
-}
-
-void CompanyTabWidget::setUpEmployeeInputs() {
-    QLabel *firstNameLabel = new QLabel();
-    firstNameLabel->setText("First Name");
-    firstNameLineEdit = new QLineEdit();
-
-    employeeLayout->addWidget(firstNameLabel, 0, 0);
-    employeeLayout->addWidget(firstNameLineEdit, 0, 1);
-
-    QLabel *lastNameLabel = new QLabel();
-    lastNameLabel->setText("Last Name");
-    lastNameLineEdit = new QLineEdit();
-
-    employeeLayout->addWidget(lastNameLabel, 1, 0);
-    employeeLayout->addWidget(lastNameLineEdit, 1, 1);
-
-    QLabel *genderLabel = new QLabel();
-    genderLabel->setText("Gender");
-    genderComboBox = new QComboBox();
-    genderComboBox->addItem("Male");
-    genderComboBox->addItem("Female");
-
-    employeeLayout->addWidget(genderLabel, 2, 0);
-    employeeLayout->addWidget(genderComboBox, 2, 1);
-
-    QLabel *jobPositionLabel = new QLabel();
-    jobPositionLabel->setText("Job Position");
-    jobPositionLineEdit = new QLineEdit();
-
-    employeeLayout->addWidget(jobPositionLabel, 3, 0);
-    employeeLayout->addWidget(jobPositionLineEdit, 3, 1);
-
-    QLabel *streetAddressLabel = new QLabel();
-    streetAddressLabel->setText("Street Address");
-    streetAddressLineEdit = new QLineEdit();
-
-    employeeLayout->addWidget(streetAddressLabel, 4, 0);
-    employeeLayout->addWidget(streetAddressLineEdit, 4, 1);
-
-    QLabel *cityLabel = new QLabel();
-    cityLabel->setText("City");
-    cityLineEdit = new QLineEdit();
-
-    employeeLayout->addWidget(cityLabel, 5, 0);
-    employeeLayout->addWidget(cityLineEdit, 5, 1);
-
-    QLabel *stateLabel = new QLabel();
-    stateLabel->setText("State");
-    stateLineEdit = new QLineEdit();
-
-    employeeLayout->addWidget(stateLabel, 6, 0);
-    employeeLayout->addWidget(stateLineEdit, 6, 1);
-
-    QLabel *zipcodeLabel = new QLabel();
-    zipcodeLabel->setText("Zipcode");
-    zipcodeLineEdit = new QLineEdit();
-
-    employeeLayout->addWidget(zipcodeLabel, 7, 0);
-    employeeLayout->addWidget(zipcodeLineEdit, 7, 1);
-
-    QLabel *hourlyWageLabel = new QLabel();
-    hourlyWageLabel->setText("Hourly Wage");
-    hourlyWageLineEdit = new QLineEdit();
-
-    employeeLayout->addWidget(hourlyWageLabel, 8, 0);
-    employeeLayout->addWidget(hourlyWageLineEdit, 8, 1);
-
-    QLabel *numberOfHoursLabel = new QLabel();
-    numberOfHoursLabel->setText("Number of hours worked");
-    numberOfHoursLineEdit = new QLineEdit();
-
-    employeeLayout->addWidget(numberOfHoursLabel, 9, 0);
-    employeeLayout->addWidget(numberOfHoursLineEdit, 9, 1);
-
-    addButton = new QPushButton("Add");
-    connect(addButton, SIGNAL (clicked()), SLOT (addEmployee()));
-
-    editButton = new QPushButton("Edit");
-    connect(editButton, SIGNAL (clicked()), SLOT (editEmployee()));
-
-    removeButton = new QPushButton("Remove");
-    connect(removeButton, SIGNAL (clicked()), SLOT (removeEmployee()));
-
-    clearButton = new QPushButton("Clear form");
-    connect(clearButton, SIGNAL (clicked()), SLOT (clearForms()));
-
-    buttonLayout = new QHBoxLayout();
-
-    buttonLayout->addWidget(addButton);
-    buttonLayout->addWidget(clearButton);
-    buttonLayout->addWidget(editButton);
-    buttonLayout->addWidget(removeButton);
-
-    employeeLayout->addLayout(buttonLayout, 10, 0, 1, 2);
-}
-
-void CompanyTabWidget::addEmployee() {
-    QString employeeId = "E" + QString::number(id);
-    QString firstName = firstNameLineEdit->text();
-    QString lastName = lastNameLineEdit->text();
-    QString gender = genderComboBox->currentText();
-    QString jobPosition = jobPositionLineEdit->text();
-    QString streetAddress = streetAddressLineEdit->text();
-    QString city = cityLineEdit->text();
-    QString state = stateLineEdit->text();
-    QString zipcode = zipcodeLineEdit->text();
-    double hourlyWage = hourlyWageLineEdit->text().toDouble();
-    int numberOfHours = numberOfHoursLineEdit->text().toInt();
-
-    ps->addEmployee(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
-    id++;
-
-    listViewModel->insertRow(listViewModel->rowCount());
-    QModelIndex index = listViewModel->index(listViewModel->rowCount()-1);
-    QString employee = employeeId + " " + firstName + " " + lastName;
-    listViewModel->setData(index, employee);
-
-    clearForms();
 }
 
 void CompanyTabWidget::setUpValidators() {
     // You can try QDoubleValidator and QIntValidator
     QRegExpValidator* integerValidator = new QRegExpValidator(QRegExp("\\d*"));
-    QRegExpValidator* doubleValidator = new QRegExpValidator(QRegExp("\\d*\\.?\\d"));
+    QRegExpValidator* doubleValidator = new QRegExpValidator(QRegExp("\\d*\\.?\\d\\d"));
     QRegExpValidator* zipcodeValidator = new QRegExpValidator(QRegExp("^[0-9]{5}(?:-[0-9]{4})?$"));
+    QRegExpValidator* stringValidator = new QRegExpValidator(QRegExp("[a-zA-Z]+"));
+    QRegExpValidator* stringWithSpacesValidator = new QRegExpValidator(QRegExp("^[a-zA-Z0-9_]+( [a-zA-Z0-9_]+)*$"));
+
+    firstNameLineEdit->setValidator(stringValidator);
+    lastNameLineEdit->setValidator(stringValidator);
+    jobPositionLineEdit->setValidator(stringWithSpacesValidator);
+    streetAddressLineEdit->setValidator(stringWithSpacesValidator);
+    zipcodeLineEdit->setValidator(zipcodeValidator);
     hourlyWageLineEdit->setValidator(doubleValidator);
     numberOfHoursLineEdit->setValidator(integerValidator);
-    zipcodeLineEdit->setValidator(zipcodeValidator);
-}
-
-void CompanyTabWidget::setUpEmployeeListView() {
-    employeeListView = new QListView();
-
-    employeeListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    connect(employeeListView, SIGNAL(clicked(QModelIndex)), this, SLOT(employeeListViewClicked(QModelIndex)));
-
-    QStringList list = ps->getEmployeesStringList();
-    listViewModel = new EmployeeStringListModel(list);
-    employeeListView->setModel(listViewModel);
-
-    // 0 is the starting row, 4 is the starting column, 10 is the length (top to bottom), 8 is width (left to right)
-    employeeLayout->addWidget(employeeListView, 0, 4, 10, 8);
 }
 
 void CompanyTabWidget::setUpEmployeeTable() {
     employeeTableView = new QTableView();
     employeeTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     employeeTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    employeeTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    employeeTableView->setSelectionMode(QAbstractItemView::SingleSelection);
     vector<Employee> list = ps->getPayrollList();
     tableViewModel = new EmployeeTableModel(list);
     employeeTableView->setModel(tableViewModel);
-}
-
-void CompanyTabWidget::setUpPayrollTable() {
-    payrollTableView = new QTableView();
-    payrollTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    payrollTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    vector<Employee> list = ps->getPayrollList();
-    payrollViewModel = new PayrollTableModel(list);
-    payrollTableView->setModel(payrollViewModel);
-}
-
-void CompanyTabWidget::employeeListViewClicked(const QModelIndex &index)
-{
-    QString employeeText = index.data(Qt::DisplayRole).toString();
-    QStringList employeeInfo = employeeText.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-
-    Employee employee = ps->getEmployeeById(employeeInfo[0]);
-    firstNameLineEdit->setText(employee.getFirstName());
-    lastNameLineEdit->setText(employee.getLastName());
-    genderComboBox->setCurrentText(employee.getGender());
-    jobPositionLineEdit->setText(employee.getJobPosition());
-    streetAddressLineEdit->setText(employee.getStreetAddress());
-    cityLineEdit->setText(employee.getCity());
-    stateLineEdit->setText(employee.getState());
-    zipcodeLineEdit->setText(employee.getZipcode());
-    hourlyWageLineEdit->setText(QString::number(employee.getHourlyWage()));
-    numberOfHoursLineEdit->setText(QString::number(employee.getNumberOfHours()));
 }
 
 
@@ -317,92 +147,262 @@ void CompanyTabWidget::tabChanged(int index)
 
 }
 
-
-void CompanyTabWidget::clearForms() {
-    // Clear forms
-    foreach(QLineEdit* le, this->findChildren<QLineEdit*>()) {
-        le->clear();
-    }
-}
-
 void CompanyTabWidget::removeEmployee()
 {
-    if (employeeListView->currentIndex().isValid() == false) {
+    if (employeeTableView->currentIndex().isValid() == false) {
         return;
     }
-    const QModelIndex &index = employeeListView->currentIndex();
-    const int row = employeeListView->currentIndex().row();
-    QString employeeText = index.data(Qt::DisplayRole).toString();
-    QString employeeId = (employeeText.split(QRegExp("\\s+"), QString::SkipEmptyParts))[0];
+    const QModelIndex &index = employeeTableView->currentIndex();
+    const int row = employeeTableView->currentIndex().row();
+
+    QString employeeId = tableViewModel->data(tableViewModel->index(row, 0), Qt::DisplayRole).toString();
+
+    qDebug() << employeeId;
 
     ps->removeEmployeeById(employeeId);
 
-    listViewModel->removeRow(row, index);
-
-
-    const QModelIndex &newIndex = employeeListView->currentIndex();
-    employeeText = newIndex.data(Qt::DisplayRole).toString();
-    QStringList employeeInfo = employeeText.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-
-    Employee employee = ps->getEmployeeById(employeeInfo[0]);
-    firstNameLineEdit->setText(employee.getFirstName());
-    lastNameLineEdit->setText(employee.getLastName());
-    genderComboBox->setCurrentText(employee.getGender());
-    jobPositionLineEdit->setText(employee.getJobPosition());
-    streetAddressLineEdit->setText(employee.getStreetAddress());
-    cityLineEdit->setText(employee.getCity());
-    stateLineEdit->setText(employee.getState());
-    zipcodeLineEdit->setText(employee.getZipcode());
-    hourlyWageLineEdit->setText(QString::number(employee.getHourlyWage()));
-    numberOfHoursLineEdit->setText(QString::number(employee.getNumberOfHours()));
+    update();
 }
 
-void CompanyTabWidget::editEmployee()
-{
-    if (employeeListView->currentIndex().isValid() == false) {
+// https://stackoverflow.com/questions/17512542/getting-multiple-inputs-from-qinputdialog-in-qtcreator
+void CompanyTabWidget::toggleAddDialog() {
+    QDialog dialog(this);
+    // Use a layout allowing to have a label next to each field
+    QFormLayout form(&dialog);
+
+    // Add some text above the fields
+    form.addRow(new QLabel("Add an Employee"));
+
+    firstNameLabel = new QLabel();
+    firstNameLabel->setText("First Name");
+    firstNameLineEdit = new QLineEdit(&dialog);
+
+    lastNameLabel = new QLabel();
+    lastNameLabel->setText("Last Name");
+    lastNameLineEdit = new QLineEdit(&dialog);
+
+    genderComboBoxLabel = new QLabel();
+    genderComboBoxLabel->setText("Gender");
+    genderComboBox = new QComboBox(&dialog);
+    genderComboBox->addItem("Male");
+    genderComboBox->addItem("Female");
+
+    jobPositionLabel = new QLabel();
+    jobPositionLabel->setText("Job Position");
+    jobPositionLineEdit = new QLineEdit(&dialog);
+
+    streetAddressLabel = new QLabel();
+    streetAddressLabel->setText("Street Address");
+    streetAddressLineEdit = new QLineEdit(&dialog);
+
+    cityLabel = new QLabel();
+    cityLabel->setText("City");
+    cityComboBox = new QComboBox(&dialog);
+    for (QString city : cities) {
+        cityComboBox->addItem(city);
+    }
+
+    stateLabel = new QLabel();
+    stateLabel->setText("State");
+    stateComboBox = new QComboBox(&dialog);
+    for (QString state : states) {
+        stateComboBox->addItem(state);
+    }
+
+    zipcodeLabel = new QLabel();
+    zipcodeLabel->setText("Zipcode");
+    zipcodeLineEdit = new QLineEdit(&dialog);
+
+    hourlyWageLabel = new QLabel();
+    hourlyWageLabel->setText("Hourly Wage");
+    hourlyWageLineEdit = new QLineEdit(&dialog);
+
+    numberOfHoursLabel = new QLabel();
+    numberOfHoursLabel->setText("Number of hours worked");
+    numberOfHoursLineEdit = new QLineEdit(&dialog);
+
+    setUpValidators();
+
+    form.addRow(firstNameLabel, firstNameLineEdit);
+    form.addRow(lastNameLabel, lastNameLineEdit);
+    form.addRow(genderComboBoxLabel, genderComboBox);
+    form.addRow(jobPositionLabel, jobPositionLineEdit);
+    form.addRow(streetAddressLabel, streetAddressLineEdit);
+    form.addRow(cityLabel, cityComboBox);
+    form.addRow(stateLabel, stateComboBox);
+    form.addRow(zipcodeLabel, zipcodeLineEdit);
+    form.addRow(hourlyWageLabel, hourlyWageLineEdit);
+    form.addRow(numberOfHoursLabel, numberOfHoursLineEdit);
+
+    // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                               Qt::Horizontal, &dialog);
+    form.addRow(&buttonBox);
+    QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+    // Show the dialog as modal
+    if (dialog.exec() == QDialog::Accepted) {
+        // If the user didn't dismiss the dialog, do something with the fields
+        QString employeeId = "E" + QString::number(id);
+        QString firstName = firstNameLineEdit->text();
+        QString lastName = lastNameLineEdit->text();
+        QString gender = genderComboBox->currentText();
+        QString jobPosition = jobPositionLineEdit->text();
+        QString streetAddress = streetAddressLineEdit->text();
+        QString city = cityComboBox->currentText();
+        QString state = stateComboBox->currentText();
+        QString zipcode = zipcodeLineEdit->text();
+        double hourlyWage = hourlyWageLineEdit->text().toDouble();
+        int numberOfHours = numberOfHoursLineEdit->text().toInt();
+
+        ps->addEmployee(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
+        id++;
+    }
+
+    update();
+}
+
+void CompanyTabWidget::toggleEditDialog() {
+    if (employeeTableView->currentIndex().isValid() == false) {
         return;
     }
-    const QModelIndex &index = employeeListView->currentIndex();
-    const int row = employeeListView->currentIndex().row();
-    QString employeeText = index.data(Qt::DisplayRole).toString();
-    QStringList employeeInfo = employeeText.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+    const QModelIndex &index = employeeTableView->currentIndex();
+    const int row = employeeTableView->currentIndex().row();
 
-    QString employeeId = employeeInfo[0];
-    QString firstName = firstNameLineEdit->text();
-    QString lastName = lastNameLineEdit->text();
-    QString gender = genderComboBox->currentText();
-    QString jobPosition = jobPositionLineEdit->text();
-    QString streetAddress = streetAddressLineEdit->text();
-    QString city = cityLineEdit->text();
-    QString state = stateLineEdit->text();
-    QString zipcode = zipcodeLineEdit->text();
-    double hourlyWage = hourlyWageLineEdit->text().toDouble();
-    int numberOfHours = numberOfHoursLineEdit->text().toInt();
+    QString employeeId = tableViewModel->data(tableViewModel->index(row, 0), Qt::DisplayRole).toString();
+    QString oldFirstName = tableViewModel->data(tableViewModel->index(row, 1), Qt::DisplayRole).toString();
+    QString oldLastName = tableViewModel->data(tableViewModel->index(row, 2), Qt::DisplayRole).toString();
+    QString oldGender = tableViewModel->data(tableViewModel->index(row, 3), Qt::DisplayRole).toString();
+    QString oldPosition = tableViewModel->data(tableViewModel->index(row, 4), Qt::DisplayRole).toString();
+    QString oldStreet = tableViewModel->data(tableViewModel->index(row, 5), Qt::DisplayRole).toString();
+    QString oldCity = tableViewModel->data(tableViewModel->index(row, 6), Qt::DisplayRole).toString();
+    QString oldState = tableViewModel->data(tableViewModel->index(row, 7), Qt::DisplayRole).toString();
+    QString oldZipcode = tableViewModel->data(tableViewModel->index(row, 8), Qt::DisplayRole).toString();
+    double oldHourlyWage = tableViewModel->data(tableViewModel->index(row, 9), Qt::DisplayRole).toDouble();
+    int oldNumberOfHours = tableViewModel->data(tableViewModel->index(row, 10), Qt::DisplayRole).toInt();
 
-    ps->editEmployee(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
+    QDialog dialog(this);
+    // Use a layout allowing to have a label next to each field
+    QFormLayout form(&dialog);
 
-    QString employee = employeeId + " " + firstName + " " + lastName;
-    listViewModel->setData(index, employee);
+    // Add some text above the fields
+    form.addRow(new QLabel("Add an Employee"));
+
+    firstNameLabel = new QLabel();
+    firstNameLabel->setText("First Name");
+    firstNameLineEdit = new QLineEdit(&dialog);
+    firstNameLineEdit->setText(oldFirstName);
+
+    lastNameLabel = new QLabel();
+    lastNameLabel->setText("Last Name");
+    lastNameLineEdit = new QLineEdit(&dialog);
+    lastNameLineEdit->setText(oldLastName);
+
+    genderComboBoxLabel = new QLabel();
+    genderComboBoxLabel->setText("Gender");
+    genderComboBox = new QComboBox(&dialog);
+    genderComboBox->addItem("Male");
+    genderComboBox->addItem("Female");
+    genderComboBox->setCurrentText(oldGender);
+
+    jobPositionLabel = new QLabel();
+    jobPositionLabel->setText("Job Position");
+    jobPositionLineEdit = new QLineEdit(&dialog);
+    jobPositionLineEdit->setText(oldPosition);
+
+    streetAddressLabel = new QLabel();
+    streetAddressLabel->setText("Street Address");
+    streetAddressLineEdit = new QLineEdit(&dialog);
+    streetAddressLineEdit->setText(oldStreet);
+
+    cityLabel = new QLabel();
+    cityLabel->setText("City");
+    cityComboBox = new QComboBox(&dialog);
+    for (QString city : cities) {
+        cityComboBox->addItem(city);
+    }
+    cityComboBox->setCurrentText(oldCity);
+
+    stateLabel = new QLabel();
+    stateLabel->setText("State");
+    stateComboBox = new QComboBox(&dialog);
+    for (QString state : states) {
+        stateComboBox->addItem(state);
+    }
+    stateComboBox->setCurrentText(oldState);
+
+    zipcodeLabel = new QLabel();
+    zipcodeLabel->setText("Zipcode");
+    zipcodeLineEdit = new QLineEdit(&dialog);
+    zipcodeLineEdit->setText(oldZipcode);
+
+    hourlyWageLabel = new QLabel();
+    hourlyWageLabel->setText("Hourly Wage");
+    hourlyWageLineEdit = new QLineEdit(&dialog);
+    hourlyWageLineEdit->setText(QString::number(oldHourlyWage));
+
+    numberOfHoursLabel = new QLabel();
+    numberOfHoursLabel->setText("Number of hours worked");
+    numberOfHoursLineEdit = new QLineEdit(&dialog);
+    numberOfHoursLineEdit->setText(QString::number(oldNumberOfHours));
+
+    setUpValidators();
+
+    form.addRow(firstNameLabel, firstNameLineEdit);
+    form.addRow(lastNameLabel, lastNameLineEdit);
+    form.addRow(genderComboBoxLabel, genderComboBox);
+    form.addRow(jobPositionLabel, jobPositionLineEdit);
+    form.addRow(streetAddressLabel, streetAddressLineEdit);
+    form.addRow(cityLabel, cityComboBox);
+    form.addRow(stateLabel, stateComboBox);
+    form.addRow(zipcodeLabel, zipcodeLineEdit);
+    form.addRow(hourlyWageLabel, hourlyWageLineEdit);
+    form.addRow(numberOfHoursLabel, numberOfHoursLineEdit);
+
+    // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                               Qt::Horizontal, &dialog);
+    form.addRow(&buttonBox);
+    QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+    // Show the dialog as modal
+    if (dialog.exec() == QDialog::Accepted) {
+        // If the user didn't dismiss the dialog, do something with the fields
+        QString firstName = firstNameLineEdit->text();
+        QString lastName = lastNameLineEdit->text();
+        QString gender = genderComboBox->currentText();
+        QString jobPosition = jobPositionLineEdit->text();
+        QString streetAddress = streetAddressLineEdit->text();
+        QString city = cityComboBox->currentText();
+        QString state = stateComboBox->currentText();
+        QString zipcode = zipcodeLineEdit->text();
+        double hourlyWage = hourlyWageLineEdit->text().toDouble();
+        int numberOfHours = numberOfHoursLineEdit->text().toInt();
+
+        ps->editEmployee(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
+    }
+
+    update();
 }
 
 void CompanyTabWidget::update() {
     numberOfEmployeesLabel->setText("Number of Employees: " + QString::number((int) ps->getPayrollList().size()));
     totalAmountPaidLabel->setText("Total Amount Paid: $" + QString::number(ps->getTotalAmount()));
 
-    //    tableViewModel = ps->getEmployeesModel();
-    //    employeeTableView->setModel(tableViewModel);
-
-    //    payrollViewModel = ps->getPaychecksModel();
-    //    payrollTableView->setModel(payrollViewModel);
+    vector<Employee> list = ps->getPayrollList();
+    tableViewModel = new EmployeeTableModel(list);
+    employeeTableView->setModel(tableViewModel);
 }
 
-void CompanyTabWidget::payEmployees() {
+void CompanyTabWidget::payAllEmployees() {
     ps->issuePaychecks();
     update();
 }
 
 void CompanyTabWidget::timerEvent(QTimerEvent *event)
 {
-//    ps->incrementHoursOfEmployees();
-//    update();
+//        ps->incrementHoursOfEmployees();
+//        update();
 }

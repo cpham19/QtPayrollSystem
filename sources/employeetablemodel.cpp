@@ -1,6 +1,6 @@
 #include "headers/employeetablemodel.h"
 
-EmployeeTableModel::EmployeeTableModel(vector<Employee> list, QObject *parent): QStandardItemModel(parent), payrollList(list) {
+EmployeeTableModel::EmployeeTableModel(vector<Employee> &list, QObject *parent): QStandardItemModel(parent), payrollList(list) {
     setUpModel();
 }
 
@@ -9,12 +9,12 @@ int EmployeeTableModel::rowCount(const QModelIndex &parent) const {
 }
 
 int EmployeeTableModel::columnCount(const QModelIndex &parent) const {
-    return 11;
+    return 12;
 }
 
 void EmployeeTableModel::setUpModel() {
     int ROWS = payrollList.size();
-    int COLUMNS = 11;
+    int COLUMNS = 12;
 
     this->setRowCount(ROWS);
     this->setColumnCount(COLUMNS);
@@ -29,6 +29,7 @@ void EmployeeTableModel::setUpModel() {
     setHeaderData(8, Qt::Horizontal, QObject::tr("Zipcode"));
     setHeaderData(9, Qt::Horizontal, QObject::tr("Hourly Wage"));
     setHeaderData(10, Qt::Horizontal, QObject::tr("Hours Worked"));
+    setHeaderData(11, Qt::Horizontal, QObject::tr("Amount to be Paid ($)"));
 
     for (int row = 0; row < ROWS; row++) {
         Employee e = payrollList[row];
@@ -67,6 +68,9 @@ void EmployeeTableModel::setUpModel() {
                     break;
                 case 10:
                     setData(index, e.getNumberOfHours());
+                    break;
+                case 11:
+                    setData(index, e.calcPay());
                     break;
                 default:
                     break;

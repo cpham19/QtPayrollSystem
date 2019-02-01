@@ -14,6 +14,11 @@
 #include <QAbstractItemView>
 #include <QPushButton>
 #include <QModelIndex>
+
+#include <QFormLayout>
+#include <QDialog>
+#include <QDialogButtonBox>
+
 #include <QTableView>
 #include <QStandardItemModel>
 #include <QTableWidgetItem>
@@ -21,9 +26,7 @@
 #include <QDebug>
 
 #include "payrollsystem.h"
-#include "employeestringlistmodel.h"
 #include "employeetablemodel.h"
-#include "payrolltablemodel.h"
 #include <cmath>
 #include <random>
 
@@ -36,14 +39,10 @@ public:
     ~CompanyTabWidget();
     void initializeData(QString name);
     void createOverviewTab();
-    void createEmployeeTab();
     void createEmployeeTableTab();
-    void createPayrollTab();
     void setUpValidators();
-    void setUpEmployeeListView();
     void setUpEmployeeInputs();
     void setUpEmployeeTable();
-    void setUpPayrollTable();
     void update();
 
     // Overview Tab
@@ -53,39 +52,36 @@ public:
     QLabel *numberOfEmployeesLabel;
     QLabel *totalAmountPaidLabel;
 
-    // Employee Tab
-    QGroupBox *employeeGroupBox;
-    QGridLayout *employeeLayout;
-    QLineEdit *firstNameLineEdit;
-    QLineEdit *lastNameLineEdit;
-    QComboBox *genderComboBox;
-    QLineEdit *jobPositionLineEdit;
-    QLineEdit *streetAddressLineEdit;
-    QLineEdit *cityLineEdit;
-    QLineEdit *stateLineEdit;
-    QLineEdit *zipcodeLineEdit;
-    QLineEdit *hourlyWageLineEdit;
-    QLineEdit *numberOfHoursLineEdit;
-
-    QListView *employeeListView;
-    EmployeeStringListModel *listViewModel;
-
-    QHBoxLayout *buttonLayout;
-    QPushButton *addButton;
-    QPushButton *editButton;
-    QPushButton *removeButton;
-    QPushButton *clearButton;
-
     // Employee Table Tab
     QGroupBox *tableGroupBox;
     QTableView *employeeTableView;
     EmployeeTableModel *tableViewModel;
 
-    // Payroll Tab
-    QGroupBox *payrollGroupBox;
-    QTableView *payrollTableView;
-    PayrollTableModel *payrollViewModel;
-    QPushButton *payButton;
+    // Dialog
+    QLabel *firstNameLabel;
+    QLineEdit *firstNameLineEdit;
+    QLabel *lastNameLabel;
+    QLineEdit *lastNameLineEdit;
+    QLabel *genderComboBoxLabel;
+    QComboBox *genderComboBox;
+    QLabel *jobPositionLabel;
+    QLineEdit *jobPositionLineEdit;
+    QLabel *streetAddressLabel;
+    QLineEdit *streetAddressLineEdit;
+    QLabel *cityLabel;
+    QComboBox *cityComboBox;
+    QLabel *stateLabel;
+    QComboBox *stateComboBox;
+    QLabel *zipcodeLabel;
+    QLineEdit *zipcodeLineEdit;
+    QLabel *hourlyWageLabel;
+    QLineEdit *hourlyWageLineEdit;
+    QLabel *numberOfHoursLabel;
+    QLineEdit *numberOfHoursLineEdit;
+
+    QPushButton *addButton;
+    QPushButton *removeButton;
+    QPushButton *payAllButton;
 
     PayrollSystem *ps;
     int id;
@@ -95,13 +91,11 @@ signals:
 public slots:
 
 private slots:
-    void addEmployee();
-    void editEmployee();
+    void toggleAddDialog();
+    void toggleEditDialog();
     void removeEmployee();
-    void payEmployees();
+    void payAllEmployees();
     void tabChanged(int index);
-    void employeeListViewClicked(const QModelIndex &index);
-    void clearForms();
 
 private:
     int timerId;
