@@ -30,6 +30,8 @@
 #include <cmath>
 #include <random>
 
+#include <QDateTime>
+
 class CompanyTabWidget : public QTabWidget
 {
     Q_OBJECT
@@ -44,6 +46,7 @@ public:
     void setUpEmployeeInputs();
     void setUpEmployeeTable();
     void update();
+    QString getCurrentTimeStamp() const;
 
     // Overview Tab
     QGroupBox *overviewGroupBox;
@@ -96,6 +99,7 @@ private slots:
     void removeEmployee();
     void payAllEmployees();
     void tabChanged(int index);
+    void automaticallyFill();
 
 private:
     int timerId;

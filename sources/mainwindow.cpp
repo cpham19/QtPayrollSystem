@@ -29,7 +29,7 @@ void MainWindow::loadData() {
         }
         maleFirstNamesFile.close();
     }
-    log->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) maleFirstNames.size()) + " first names from " + fileName + ".");
+    mainLog->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) maleFirstNames.size()) + " first names from " + fileName + ".");
 
     fileName = "femalefirstNames.txt";
     path = qApp->applicationDirPath() + "/txt/" + fileName;
@@ -43,7 +43,7 @@ void MainWindow::loadData() {
         }
         femaleFirstNamesFile.close();
     }
-    log->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) femaleFirstNames.size()) + " first names from " + fileName + ".");
+    mainLog->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) femaleFirstNames.size()) + " first names from " + fileName + ".");
 
     fileName = "lastnames.txt";
     path = qApp->applicationDirPath() + "/txt/" + fileName;
@@ -57,7 +57,7 @@ void MainWindow::loadData() {
         }
         lastNamesFile.close();
     }
-    log->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) lastNames.size()) + " last names from " + fileName + ".");
+    mainLog->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) lastNames.size()) + " last names from " + fileName + ".");
 
     fileName = "jobs.txt";
     path = qApp->applicationDirPath() + "/txt/" + fileName;
@@ -71,7 +71,7 @@ void MainWindow::loadData() {
         }
         jobsFile.close();
     }
-    log->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) jobs.size()) + " jobs from " + fileName + ".");
+    mainLog->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) jobs.size()) + " jobs from " + fileName + ".");
 
     fileName = "streets.txt";
     path = qApp->applicationDirPath() + "/txt/" + fileName;
@@ -85,7 +85,7 @@ void MainWindow::loadData() {
         }
         streetsFile.close();
     }
-    log->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) streets.size()) + " streets from " + fileName + ".");
+    mainLog->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) streets.size()) + " streets from " + fileName + ".");
 
     fileName = "streetsuffixes.txt";
     path = qApp->applicationDirPath() + "/txt/" + fileName;
@@ -99,7 +99,7 @@ void MainWindow::loadData() {
         }
         streetSuffixesFile.close();
     }
-    log->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) streetSuffixes.size()) + " street suffixes from " + fileName + ".");
+    mainLog->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) streetSuffixes.size()) + " street suffixes from " + fileName + ".");
 
     fileName = "states.txt";
     path = qApp->applicationDirPath() + "/txt/" + fileName;
@@ -113,7 +113,7 @@ void MainWindow::loadData() {
         }
         statesFile.close();
     }
-    log->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) states.size()) + " states from " + fileName + ".");
+    mainLog->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) states.size()) + " states from " + fileName + ".");
 
     fileName = "cities.txt";
     path = qApp->applicationDirPath() + "/txt/" + fileName;
@@ -127,7 +127,7 @@ void MainWindow::loadData() {
         }
         citiesFile.close();
     }
-    log->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) cities.size()) + " cities from " + fileName + ".");
+    mainLog->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) cities.size()) + " cities from " + fileName + ".");
 
     fileName = "zipcodes.txt";
     path = qApp->applicationDirPath() + "/txt/" + fileName;
@@ -141,7 +141,7 @@ void MainWindow::loadData() {
         }
         zipcodesFile.close();
     }
-    log->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) zipcodes.size()) + " zipcodes from " + fileName + ".");
+    mainLog->append(getCurrentTimeStamp() + " Loaded " + QString::number((int) zipcodes.size()) + " zipcodes from " + fileName + ".");
 }
 
 void MainWindow::setupUi(QMainWindow *MainWindow) {
@@ -161,8 +161,8 @@ void MainWindow::setupUi(QMainWindow *MainWindow) {
     actionNew_FiveCompanies = new QAction(MainWindow);
     actionNew_FiveCompanies->setObjectName(QString::fromUtf8("actionNew_FiveCompanies"));
 
-    actionView_Log = new QAction(MainWindow);
-    actionView_Log->setObjectName(QString::fromUtf8("actionView_Log"));
+    actionView_mainLog = new QAction(MainWindow);
+    actionView_mainLog->setObjectName(QString::fromUtf8("actionView_mainLog"));
 
     // Main widget for our window
     centralWidget = new QWidget(MainWindow);
@@ -185,10 +185,10 @@ void MainWindow::setupUi(QMainWindow *MainWindow) {
 
     gridLayout->addWidget(companiesTabWidget, 0, 0, 1, 1);
 
-    // Log Widget
-    log = new QTextEdit();
-    log->setReadOnly(true);
-    log->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+    // mainLog Widget
+    mainLog = new QTextEdit();
+    mainLog->setReadOnly(true);
+    mainLog->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
 
     MainWindow->setCentralWidget(centralWidget);
 
@@ -203,20 +203,20 @@ void MainWindow::setupUi(QMainWindow *MainWindow) {
     menuNew = new QMenu(menuBar);
     menuNew->setObjectName(QString::fromUtf8("menuNew"));
 
-    menuLog = new QMenu(menuBar);
-    menuLog->setObjectName(QString::fromUtf8("menuLog"));
+    menuMainLog = new QMenu(menuBar);
+    menuMainLog->setObjectName(QString::fromUtf8("menumainLog"));
 
     MainWindow->setMenuBar(menuBar);
     menuBar->addAction(menuNew->menuAction());
     menuBar->addAction(menuAbout->menuAction());
-    menuBar->addAction(menuLog->menuAction());
+    menuBar->addAction(menuMainLog->menuAction());
 
     menuAbout->addAction(actionAuthor);
 
     menuNew->addAction(actionNew_Company);
     menuNew->addAction(actionNew_FiveCompanies);
 
-    menuLog->addAction(actionView_Log);
+    menuMainLog->addAction(actionView_mainLog);
 
     retranslateUi(MainWindow);
 
@@ -228,10 +228,10 @@ void MainWindow::retranslateUi(QMainWindow *MainWindow) {
     actionAuthor->setText(QApplication::translate("MainWindow", "Author", nullptr));
     actionNew_Company->setText(QApplication::translate("MainWindow", "New Company", nullptr));
     actionNew_FiveCompanies->setText(QApplication::translate("MainWindow", "New Five Companies", nullptr));
-    actionView_Log->setText(QApplication::translate("MainWindow", "View Log", nullptr));
+    actionView_mainLog->setText(QApplication::translate("MainWindow", "View Log", nullptr));
     menuAbout->setTitle(QApplication::translate("MainWindow", "About", nullptr));
     menuNew->setTitle(QApplication::translate("MainWindow", "New", nullptr));
-    menuLog->setTitle(QApplication::translate("MainWindow", "Log", nullptr));
+    menuMainLog->setTitle(QApplication::translate("MainWindow", "Log", nullptr));
 } // retranslateUi
 
 void MainWindow::on_actionAuthor_triggered()
@@ -250,25 +250,27 @@ void MainWindow::on_actionNew_Company_triggered()
     CompanyTabWidget *company = new CompanyTabWidget(companiesTabWidget, name);
     company->setObjectName(name);
     companiesTabWidget->addTab(company, name);
-    log->append(getCurrentTimeStamp() + " Added a new company.");
+    mainLog->append(getCurrentTimeStamp() + " Added a new company '" + name + "'.");
 }
 
 void MainWindow::on_actionNew_FiveCompanies_triggered()
 {
+    mainLog->append(getCurrentTimeStamp() + " Adding five new companies!");
     for (int i = 1; i <= 5; i++) {
         counter++;
         QString name = "Company#" + QString::number(counter);
         CompanyTabWidget *company = new CompanyTabWidget(companiesTabWidget, name);
         company->setObjectName(name);
         companiesTabWidget->addTab(company, name);
+        mainLog->append(getCurrentTimeStamp() + " Added a new company '" + name + "'.");
     }
-    log->append(getCurrentTimeStamp() + " Added five new companies.");
 }
 
-void MainWindow::on_actionView_Log_triggered()
+void MainWindow::on_actionView_mainLog_triggered()
 {
-    log->resize(400, 400);
-    log->show();
+    mainLog->resize(400, 400);
+    mainLog->setWindowTitle("Log");
+    mainLog->show();
 }
 
 void MainWindow::onTabBarDoubleClicked(int index)
@@ -276,7 +278,7 @@ void MainWindow::onTabBarDoubleClicked(int index)
     // Get the widget at the tab
     CompanyTabWidget *tabWidget = (CompanyTabWidget *) companiesTabWidget->widget(index);
 
-    // Dialog to rename company
+    // DiamainLog to rename company
     bool ok = true;
     QString newName = QInputDialog::getText (
                 this, tr ("Change Company Name"),
@@ -285,7 +287,7 @@ void MainWindow::onTabBarDoubleClicked(int index)
                 "",
                 &ok);
 
-    log->append(getCurrentTimeStamp() + " Renaming company '" + tabWidget->ps->getNameOfCompany() + "' to " + "'" + newName +"'.");
+    mainLog->append(getCurrentTimeStamp() + " Renaming company '" + tabWidget->ps->getNameOfCompany() + "' to " + "'" + newName +"'.");
     companiesTabWidget->setTabText(index, newName);
     tabWidget->ps->setNameOfCompany(newName);
     tabWidget->nameOfCompanyLabel->setText("Company Name: " + tabWidget->ps->getNameOfCompany());
@@ -293,7 +295,7 @@ void MainWindow::onTabBarDoubleClicked(int index)
 
 void MainWindow::closeTab(int index) {
     companiesTabWidget->removeTab(index);
-    log->append(getCurrentTimeStamp() + " Closed Tab#" + QString::number(index));
+    mainLog->append(getCurrentTimeStamp() + " Closed Tab#" + QString::number(index));
 }
 
 QString MainWindow::getCurrentTimeStamp() {

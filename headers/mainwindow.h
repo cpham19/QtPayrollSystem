@@ -40,21 +40,20 @@ public:
     QAction *actionAuthor;
     QAction *actionNew_Company;
     QAction *actionNew_FiveCompanies;
-    QAction *actionView_Log;
+    QAction *actionView_mainLog;
     QWidget *centralWidget;
-    QTextEdit *log;
     QGridLayout *gridLayout;
     QTabWidget *companiesTabWidget;
     QMenuBar *menuBar;
     QMenu *menuAbout;
     QMenu *menuNew;
-    QMenu *menuLog;
+    QMenu *menuMainLog;
 
 private slots:
     void on_actionAuthor_triggered();
     void on_actionNew_Company_triggered();
     void on_actionNew_FiveCompanies_triggered();
-    void on_actionView_Log_triggered();
+    void on_actionView_mainLog_triggered();
     void onTabBarDoubleClicked(int index);
     void closeTab(int index);
 };

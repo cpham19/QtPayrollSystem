@@ -136,8 +136,7 @@ void CompanyTabWidget::setUpEmployeeTable() {
     employeeTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     employeeTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     employeeTableView->setSelectionMode(QAbstractItemView::SingleSelection);
-    vector<Employee> list = ps->getPayrollList();
-    tableViewModel = new EmployeeTableModel(list);
+    tableViewModel = new EmployeeTableModel(ps);
     employeeTableView->setModel(tableViewModel);
 }
 
@@ -157,9 +156,13 @@ void CompanyTabWidget::removeEmployee()
 
     QString employeeId = tableViewModel->data(tableViewModel->index(row, 0), Qt::DisplayRole).toString();
 
-    qDebug() << employeeId;
-
     ps->removeEmployeeById(employeeId);
+
+    qDebug() << row;
+
+    tableViewModel->removeRowByRow(employeeId, row);
+
+    mainLog->append(getCurrentTimeStamp() + " Removed Employee #" + employeeId);
 
     update();
 }
@@ -237,6 +240,11 @@ void CompanyTabWidget::toggleAddDialog() {
     // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
                                Qt::Horizontal, &dialog);
+
+    QPushButton *autofillButton = new QPushButton("Autofill forms");
+    connect(autofillButton, SIGNAL (clicked()), SLOT (automaticallyFill()));
+    buttonBox.addButton(autofillButton, QDialogButtonBox::ActionRole);
+
     form.addRow(&buttonBox);
     QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
     QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
@@ -257,17 +265,18 @@ void CompanyTabWidget::toggleAddDialog() {
         int numberOfHours = numberOfHoursLineEdit->text().toInt();
 
         ps->addEmployee(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
+        tableViewModel->insertNewRow(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
+
+        mainLog->append(getCurrentTimeStamp() + " Added Employee# " + employeeId);
+
         id++;
     }
-
-    update();
 }
 
 void CompanyTabWidget::toggleEditDialog() {
     if (employeeTableView->currentIndex().isValid() == false) {
         return;
     }
-    const QModelIndex &index = employeeTableView->currentIndex();
     const int row = employeeTableView->currentIndex().row();
 
     QString employeeId = tableViewModel->data(tableViewModel->index(row, 0), Qt::DisplayRole).toString();
@@ -363,9 +372,14 @@ void CompanyTabWidget::toggleEditDialog() {
     // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
                                Qt::Horizontal, &dialog);
+
+    QPushButton *autofillButton = new QPushButton("Autofill forms");
+    connect(autofillButton, SIGNAL (clicked()), SLOT (automaticallyFill()));
+    buttonBox.addButton(autofillButton, QDialogButtonBox::ActionRole);
+
     form.addRow(&buttonBox);
-    QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
-    QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+    connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
 
     // Show the dialog as modal
     if (dialog.exec() == QDialog::Accepted) {
@@ -382,18 +396,69 @@ void CompanyTabWidget::toggleEditDialog() {
         int numberOfHours = numberOfHoursLineEdit->text().toInt();
 
         ps->editEmployee(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
+
+        tableViewModel->editRow(row, employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
+
+        mainLog->append(getCurrentTimeStamp() + " Editted Employee# " + employeeId);
+
+        update();
+    }
+}
+
+void CompanyTabWidget::automaticallyFill() {
+    // This will generate different seed for every new tab (apparently rand() is not good in modern times but I needed something to give me a new seed everytime I open a tab)
+    mt19937 generator(rand());
+    uniform_real_distribution<double> doubleDistribution(1.0,50.0);
+    uniform_int_distribution<int> numberOfEmployeesDistribution(1,40);
+
+    // Each distribution has a different size for each text file
+    uniform_int_distribution<int> maleFirstNamesDistribution(0, maleFirstNames.size() - 1);
+    uniform_int_distribution<int> femaleFirstNamesDistribution(0, femaleFirstNames.size() - 1);
+    uniform_int_distribution<int> genderDistribution(0, 1);
+    uniform_int_distribution<int> lastNamesDistribution(0, lastNames.size() - 1);
+    uniform_int_distribution<int> jobsDistribution(0, jobs.size() - 1);
+    uniform_int_distribution<int> streetsDistribution(0, streets.size() - 1);
+    uniform_int_distribution<int> streetSuffixesDistribution(0, streetSuffixes.size() - 1);
+    uniform_int_distribution<int> citiesDistribution(0, cities.size() - 1);
+    uniform_int_distribution<int> statesDistribution(0, states.size() - 1);
+    uniform_int_distribution<int> zipcodesDistribution(0, zipcodes.size() - 1);
+
+    QString gender;
+    QString firstName;
+
+    if ((int) genderDistribution(generator) == 0 ) {
+        gender = "Male";
+        firstName = maleFirstNames[maleFirstNamesDistribution(generator)];
+    }
+    else {
+        gender = "Female";
+        firstName = femaleFirstNames[femaleFirstNamesDistribution(generator)];
     }
 
-    update();
+    QString lastName = lastNames[lastNamesDistribution(generator)];
+    QString position = jobs[jobsDistribution(generator)];
+    QString street = streets[streetsDistribution(generator)] + " " + streetSuffixes[streetSuffixesDistribution(generator)];
+    QString city = cities[citiesDistribution(generator)];
+    QString state = states[statesDistribution(generator)];
+    QString zipcode = zipcodes[zipcodesDistribution(generator)];
+    double hourlyWage = QString::number(doubleDistribution(generator), 'f', 2).toDouble();
+    int numberOfHours =  numberOfEmployeesDistribution(generator);
+
+    firstNameLineEdit->setText(firstName);
+    lastNameLineEdit->setText(lastName);
+    genderComboBox->setCurrentText(gender);
+    jobPositionLineEdit->setText(position);
+    streetAddressLineEdit->setText(street);
+    cityComboBox->setCurrentText(city);
+    stateComboBox->setCurrentText(state);
+    zipcodeLineEdit->setText(zipcode);
+    hourlyWageLineEdit->setText(QString::number(hourlyWage));
+    numberOfHoursLineEdit->setText(QString::number(numberOfHours));
 }
 
 void CompanyTabWidget::update() {
     numberOfEmployeesLabel->setText("Number of Employees: " + QString::number((int) ps->getPayrollList().size()));
     totalAmountPaidLabel->setText("Total Amount Paid: $" + QString::number(ps->getTotalAmount()));
-
-    vector<Employee> list = ps->getPayrollList();
-    tableViewModel = new EmployeeTableModel(list);
-    employeeTableView->setModel(tableViewModel);
 }
 
 void CompanyTabWidget::payAllEmployees() {
@@ -405,4 +470,9 @@ void CompanyTabWidget::timerEvent(QTimerEvent *event)
 {
 //        ps->incrementHoursOfEmployees();
 //        update();
+}
+
+QString CompanyTabWidget::getCurrentTimeStamp() const {
+    QString timestamp = "[" + QDateTime::currentDateTime().toString() + "]";
+    return timestamp;
 }

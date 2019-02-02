@@ -6,6 +6,7 @@
 #include <sstream>
 #include <vector>
 #include <QString>
+#include <QTextEdit>
 
 using namespace std;
 
@@ -18,6 +19,7 @@ extern vector<QString> streetSuffixes;
 extern vector<QString> cities;
 extern vector<QString> zipcodes;
 extern vector<QString> states;
+extern QTextEdit *mainLog;
 
 extern int counter;
 

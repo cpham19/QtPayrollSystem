@@ -10,3 +10,4 @@ vector<QString> streetSuffixes;
 vector<QString> cities;
 vector<QString> states;
 vector<QString> zipcodes;
+QTextEdit *mainLog;
