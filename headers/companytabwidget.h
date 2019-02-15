@@ -14,6 +14,7 @@
 #include <QAbstractItemView>
 #include <QPushButton>
 #include <QModelIndex>
+#include <QApplication>
 
 #include <QFormLayout>
 #include <QDialog>
@@ -31,6 +32,7 @@
 #include <random>
 
 #include <QDateTime>
+#include <QFile>
 
 class CompanyTabWidget : public QTabWidget
 {
@@ -40,12 +42,21 @@ public:
     CompanyTabWidget(QWidget *parent = nullptr, QString name = "");
     ~CompanyTabWidget();
     void initializeData(QString name);
+
     void createOverviewTab();
     void createEmployeeTableTab();
+    void createOutputTab();
+
+    void createTimer();
+    void stopTimer();
+
     void setUpValidators();
     void setUpEmployeeInputs();
     void setUpEmployeeTable();
+
     void update();
+    void addEmployeeByQStringList(QStringList list);
+
     QString getCurrentTimeStamp() const;
 
     // Overview Tab
@@ -57,6 +68,7 @@ public:
 
     // Employee Table Tab
     QGroupBox *tableGroupBox;
+    QGridLayout *tableLayout;
     QTableView *employeeTableView;
     EmployeeTableModel *tableViewModel;
 
@@ -68,7 +80,7 @@ public:
     QLabel *genderComboBoxLabel;
     QComboBox *genderComboBox;
     QLabel *jobPositionLabel;
-    QLineEdit *jobPositionLineEdit;
+    QComboBox *jobPositionComboBox;
     QLabel *streetAddressLabel;
     QLineEdit *streetAddressLineEdit;
     QLabel *cityLabel;
@@ -84,10 +96,16 @@ public:
 
     QPushButton *addButton;
     QPushButton *removeButton;
+    QPushButton *generateEmployeesButton;
     QPushButton *payAllButton;
 
     PayrollSystem *ps;
     int id;
+
+    // Output Tab
+    QGroupBox *outputGroupBox;
+    QGridLayout *outputLayout;
+    QPushButton *saveToFileButton;
 
 signals:
 
@@ -97,9 +115,11 @@ private slots:
     void toggleAddDialog();
     void toggleEditDialog();
     void removeEmployee();
+    void generateRandomEmployees();
     void payAllEmployees();
     void tabChanged(int index);
     void automaticallyFill();
+    void saveToFile();
 
 private:
     int timerId;

@@ -36,58 +36,54 @@ void EmployeeTableModel::setUpModel() {
         for (int col = 0; col < COLUMNS; col++) {
             QModelIndex index = this->index(row,col,QModelIndex());
             switch(col) {
-                case 0:
-                    setData(index, e.getEmployeeId());
-                    break;
-                case 1:
-                    setData(index, e.getFirstName());
-                    break;
-                case 2:
-                    setData(index, e.getLastName());
-                    break;
-                case 3:
-                    setData(index, e.getGender());
-                    break;
-                case 4:
-                    setData(index, e.getJobPosition());
-                    break;
-                case 5:
-                    setData(index, e.getStreetAddress());
-                    break;
-                case 6:
-                    setData(index, e.getCity());
-                    break;
-                case 7:
-                    setData(index, e.getState());
-                    break;
-                case 8:
-                    setData(index, e.getZipcode());
-                    break;
-                case 9:
-                    setData(index, e.getHourlyWage());
-                    break;
-                case 10:
-                    setData(index, e.getNumberOfHours());
-                    break;
-                case 11:
-                    setData(index, e.calcPay());
-                    break;
-                default:
-                    break;
+            case 0:
+                setData(index, e.getEmployeeId());
+                break;
+            case 1:
+                setData(index, e.getFirstName());
+                break;
+            case 2:
+                setData(index, e.getLastName());
+                break;
+            case 3:
+                setData(index, e.getGender());
+                break;
+            case 4:
+                setData(index, e.getJobPosition());
+                break;
+            case 5:
+                setData(index, e.getStreetAddress());
+                break;
+            case 6:
+                setData(index, e.getCity());
+                break;
+            case 7:
+                setData(index, e.getState());
+                break;
+            case 8:
+                setData(index, e.getZipcode());
+                break;
+            case 9:
+                setData(index, e.getHourlyWage());
+                break;
+            case 10:
+                setData(index, e.getNumberOfHours());
+                break;
+            case 11:
+                setData(index, e.calcPay());
+                break;
+            default:
+                break;
             }
         }
     }
 }
 
 void EmployeeTableModel::removeRowByRow(QString employeeId, int row) {
-    ps->removeEmployeeById(employeeId);
-
     removeRow(row);
 }
 
 void EmployeeTableModel::insertNewRow(QString employeeId, QString firstName, QString lastName, QString gender, QString position, QString streetAddress, QString city, QString state, QString zipcode, double hourlyWage, int numberOfHours) {
-    ps->addEmployee(employeeId, firstName, lastName, gender, position, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
-
     QStandardItem* employeeIdCol = new QStandardItem(employeeId);
     QStandardItem* firstNameCol = new QStandardItem(firstName);
     QStandardItem* lastNameCol = new QStandardItem(lastName);
@@ -119,46 +115,81 @@ void EmployeeTableModel::insertNewRow(QString employeeId, QString firstName, QSt
 }
 
 void EmployeeTableModel::editRow(int row, QString employeeId, QString firstName, QString lastName, QString gender, QString position, QString streetAddress, QString city, QString state, QString zipcode, double hourlyWage, int numberOfHours) {
-    ps->editEmployee(employeeId, firstName, lastName, gender, position, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
-
     for (int col = 1; col < 12; col++) {
         QModelIndex index = this->index(row,col,QModelIndex());
         switch(col) {
-            case 1:
-                setData(index, firstName);
-                break;
-            case 2:
-                setData(index, lastName);
-                break;
-            case 3:
-                setData(index, gender);
-                break;
-            case 4:
-                setData(index, position);
-                break;
-            case 5:
-                setData(index, streetAddress);
-                break;
-            case 6:
-                setData(index, city);
-                break;
-            case 7:
-                setData(index, state);
-                break;
-            case 8:
-                setData(index, zipcode);
-                break;
-            case 9:
-                setData(index, hourlyWage);
-                break;
+        case 1:
+            setData(index, firstName);
+            break;
+        case 2:
+            setData(index, lastName);
+            break;
+        case 3:
+            setData(index, gender);
+            break;
+        case 4:
+            setData(index, position);
+            break;
+        case 5:
+            setData(index, streetAddress);
+            break;
+        case 6:
+            setData(index, city);
+            break;
+        case 7:
+            setData(index, state);
+            break;
+        case 8:
+            setData(index, zipcode);
+            break;
+        case 9:
+            setData(index, hourlyWage);
+            break;
+        case 10:
+            setData(index, numberOfHours);
+            break;
+        case 11:
+            setData(index, QString::number(hourlyWage * numberOfHours));
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void EmployeeTableModel::payAllRows() {
+    for (int row = 0; row < ps->getPayrollList().size(); row++) {
+        for (int col = 10; col < 12; col++) {
+            QModelIndex index = this->index(row,col,QModelIndex());
+            switch(col) {
             case 10:
-                setData(index, numberOfHours);
+                setData(index, QString::number(0));
                 break;
             case 11:
-                setData(index, QString::number(hourlyWage * numberOfHours));
+                setData(index, QString::number(0.00));
                 break;
             default:
                 break;
+            }
+        }
+    }
+}
+
+void EmployeeTableModel::incrementHours() {
+    for (int row = 0; row < ps->getPayrollList().size(); row++) {
+        Employee e = ps->getPayrollList()[row];
+        for (int col = 10; col < 12; col++) {
+            QModelIndex index = this->index(row,col,QModelIndex());
+            switch(col) {
+            case 10:
+                setData(index, QString::number(e.getNumberOfHours()));
+                break;
+            case 11:
+                setData(index, QString::number(e.getNumberOfHours() * e.getHourlyWage()));
+                break;
+            default:
+                break;
+            }
         }
     }
 }

@@ -155,14 +155,17 @@ void MainWindow::setupUi(QMainWindow *MainWindow) {
     actionAuthor = new QAction(MainWindow);
     actionAuthor->setObjectName(QString::fromUtf8("actionAuthor"));
 
-    actionNew_Company = new QAction(MainWindow);
-    actionNew_Company->setObjectName(QString::fromUtf8("actionNew_Company"));
+    actionNewCompany = new QAction(MainWindow);
+    actionNewCompany->setObjectName(QString::fromUtf8("actionNewCompany"));
 
-    actionNew_FiveCompanies = new QAction(MainWindow);
-    actionNew_FiveCompanies->setObjectName(QString::fromUtf8("actionNew_FiveCompanies"));
+    actionNewFiveCompanies = new QAction(MainWindow);
+    actionNewFiveCompanies->setObjectName(QString::fromUtf8("actionNewFiveCompanies"));
 
-    actionView_mainLog = new QAction(MainWindow);
-    actionView_mainLog->setObjectName(QString::fromUtf8("actionView_mainLog"));
+    actionOpenFile = new QAction(MainWindow);
+    actionOpenFile->setObjectName(QString::fromUtf8(("actionOpenFile")));
+
+    actionViewMainLog = new QAction(MainWindow);
+    actionViewMainLog->setObjectName(QString::fromUtf8("actionViewMainLog"));
 
     // Main widget for our window
     centralWidget = new QWidget(MainWindow);
@@ -197,26 +200,27 @@ void MainWindow::setupUi(QMainWindow *MainWindow) {
     menuBar->setObjectName(QString::fromUtf8("menuBar"));
     menuBar->setGeometry(QRect(0, 0, 1280, 50));
 
+    menuFile = new QMenu(menuBar);
+    menuFile->setObjectName(QString::fromUtf8("menuFile"));
+
     menuAbout = new QMenu(menuBar);
     menuAbout->setObjectName(QString::fromUtf8("menuAbout"));
 
-    menuNew = new QMenu(menuBar);
-    menuNew->setObjectName(QString::fromUtf8("menuNew"));
-
     menuMainLog = new QMenu(menuBar);
-    menuMainLog->setObjectName(QString::fromUtf8("menumainLog"));
+    menuMainLog->setObjectName(QString::fromUtf8("menuMainLog"));
 
     MainWindow->setMenuBar(menuBar);
-    menuBar->addAction(menuNew->menuAction());
+    menuBar->addAction(menuFile->menuAction());
     menuBar->addAction(menuAbout->menuAction());
     menuBar->addAction(menuMainLog->menuAction());
 
     menuAbout->addAction(actionAuthor);
 
-    menuNew->addAction(actionNew_Company);
-    menuNew->addAction(actionNew_FiveCompanies);
+    menuFile->addAction(actionOpenFile);
+    menuFile->addAction(actionNewCompany);
+    menuFile->addAction(actionNewFiveCompanies);
 
-    menuMainLog->addAction(actionView_mainLog);
+    menuMainLog->addAction(actionViewMainLog);
 
     retranslateUi(MainWindow);
 
@@ -226,12 +230,13 @@ void MainWindow::setupUi(QMainWindow *MainWindow) {
 void MainWindow::retranslateUi(QMainWindow *MainWindow) {
     MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Payroll System", nullptr));
     actionAuthor->setText(QApplication::translate("MainWindow", "Author", nullptr));
-    actionNew_Company->setText(QApplication::translate("MainWindow", "New Company", nullptr));
-    actionNew_FiveCompanies->setText(QApplication::translate("MainWindow", "New Five Companies", nullptr));
-    actionView_mainLog->setText(QApplication::translate("MainWindow", "View Log", nullptr));
+    actionNewCompany->setText(QApplication::translate("MainWindow", "New Company", nullptr));
+    actionNewFiveCompanies->setText(QApplication::translate("MainWindow", "New Five Companies", nullptr));
+    actionViewMainLog->setText(QApplication::translate("MainWindow", "View Log", nullptr));
+    actionOpenFile->setText(QApplication::translate("MainWindow", "Open File", nullptr));
     menuAbout->setTitle(QApplication::translate("MainWindow", "About", nullptr));
-    menuNew->setTitle(QApplication::translate("MainWindow", "New", nullptr));
     menuMainLog->setTitle(QApplication::translate("MainWindow", "Log", nullptr));
+    menuFile->setTitle(QApplication::translate("MainWindow", "File", nullptr));
 } // retranslateUi
 
 void MainWindow::on_actionAuthor_triggered()
@@ -243,7 +248,7 @@ void MainWindow::on_actionAuthor_triggered()
     msgBox.exec();
 }
 
-void MainWindow::on_actionNew_Company_triggered()
+void MainWindow::on_actionNewCompany_triggered()
 {
     counter++;
     QString name = "Company#" + QString::number(counter);
@@ -253,7 +258,7 @@ void MainWindow::on_actionNew_Company_triggered()
     mainLog->append(getCurrentTimeStamp() + " Added a new company '" + name + "'.");
 }
 
-void MainWindow::on_actionNew_FiveCompanies_triggered()
+void MainWindow::on_actionNewFiveCompanies_triggered()
 {
     mainLog->append(getCurrentTimeStamp() + " Adding five new companies!");
     for (int i = 1; i <= 5; i++) {
@@ -266,15 +271,66 @@ void MainWindow::on_actionNew_FiveCompanies_triggered()
     }
 }
 
-void MainWindow::on_actionView_mainLog_triggered()
+void MainWindow::on_actionViewMainLog_triggered()
 {
     mainLog->resize(400, 400);
     mainLog->setWindowTitle("Log");
     mainLog->show();
 }
 
-void MainWindow::onTabBarDoubleClicked(int index)
-{
+void MainWindow::on_actionOpenFile_triggered() {
+    QString path = qApp->applicationDirPath() + "/csv";
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open CSV File"), path,tr("Comma-Separated Values File (*.csv);;All Files (*)"));
+
+    if (fileName.isEmpty()) {
+        return;
+    }
+    else {
+        QFile file(fileName);
+
+        if (!file.open(QIODevice::ReadOnly)) {
+            QMessageBox::information(this, tr("Unable to open file"), file.errorString());
+            return;
+        }
+
+        QTextStream in(&file);
+
+        int lineNumber = 1;
+        CompanyTabWidget *company = new CompanyTabWidget(companiesTabWidget, "Temp Name");
+        QString nameOfTab;
+
+        while (!in.atEnd())
+        {
+           QString line = in.readLine();
+
+           if (lineNumber == 2) {
+               QStringList list = line.split(",");
+               QString nameOfCompany = list[0];
+               QString numberOfEmployees = list[1];
+               QString amountPaid = list[2];
+
+               nameOfTab = list[0];
+               company->setObjectName(nameOfCompany);
+               company->ps->setNameOfCompany(nameOfCompany);
+               company->ps->setTotalAmount(amountPaid.toDouble());
+           }
+           else if (lineNumber >= 6) {
+               QStringList list = line.split(",");
+
+               company->addEmployeeByQStringList(list);
+           }
+
+           lineNumber++;
+        }
+        file.close();
+
+        companiesTabWidget->addTab(company, nameOfTab);
+        mainLog->append(getCurrentTimeStamp() + " Loaded a company '" + nameOfTab + "'.");
+        counter++;
+    }
+}
+
+void MainWindow::onTabBarDoubleClicked(int index) {
     // Get the widget at the tab
     CompanyTabWidget *tabWidget = (CompanyTabWidget *) companiesTabWidget->widget(index);
 
@@ -284,17 +340,24 @@ void MainWindow::onTabBarDoubleClicked(int index)
                 this, tr ("Change Company Name"),
                 tr ("Insert New Company Name"),
                 QLineEdit::Normal,
-                "",
+                tabWidget->ps->getNameOfCompany(),
                 &ok);
 
-    mainLog->append(getCurrentTimeStamp() + " Renaming company '" + tabWidget->ps->getNameOfCompany() + "' to " + "'" + newName +"'.");
-    companiesTabWidget->setTabText(index, newName);
-    tabWidget->ps->setNameOfCompany(newName);
-    tabWidget->nameOfCompanyLabel->setText("Company Name: " + tabWidget->ps->getNameOfCompany());
+    if (ok && !newName.isEmpty()) {
+        mainLog->append(getCurrentTimeStamp() + " Renaming company '" + tabWidget->ps->getNameOfCompany() + "' to " + "'" + newName +"'.");
+        companiesTabWidget->setTabText(index, newName);
+        tabWidget->ps->setNameOfCompany(newName);
+        tabWidget->nameOfCompanyLabel->setText("Company Name: " + tabWidget->ps->getNameOfCompany());
+    }
 }
 
 void MainWindow::closeTab(int index) {
+    // Get the widget at the tab
+    CompanyTabWidget *tabWidget = (CompanyTabWidget *) companiesTabWidget->widget(index);
+    tabWidget->stopTimer();
+
     companiesTabWidget->removeTab(index);
+
     mainLog->append(getCurrentTimeStamp() + " Closed Tab#" + QString::number(index));
 }
 

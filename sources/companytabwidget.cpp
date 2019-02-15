@@ -5,25 +5,38 @@ CompanyTabWidget::CompanyTabWidget(QWidget *parent, QString name): QTabWidget(pa
     initializeData(name);
     createOverviewTab();
     createEmployeeTableTab();
+    createOutputTab();
 
-    //timerId = startTimer(1000);
+    createTimer();
 }
 
 CompanyTabWidget::~CompanyTabWidget()
 {
-    //killTimer(timerId);
+    stopTimer();
     delete this;
 }
 
+void CompanyTabWidget::createTimer() {
+    timerId = startTimer(2000);
+}
+
+void CompanyTabWidget::stopTimer() {
+    killTimer(timerId);
+}
+
 void CompanyTabWidget::initializeData(QString name) {
-    id = 50;
+    id = 1;
     ps = new PayrollSystem();
     ps->setNameOfCompany(name);
 
+    this->setStyleSheet("QTabBar::tab { height: 25px; width: 400px;}");
+}
+
+void CompanyTabWidget::generateRandomEmployees() {
     // This will generate different seed for every new tab (apparently rand() is not good in modern times but I needed something to give me a new seed everytime I open a tab)
     mt19937 generator(rand());
-    uniform_real_distribution<double> doubleDistribution(1.0,50.0);
-    uniform_int_distribution<int> numberOfEmployeesDistribution(1,40);
+    uniform_real_distribution<double> doubleDistribution(10.0,50.0);
+    uniform_int_distribution<int> numberOfEmployeesDistribution(15,40);
 
     // Each distribution has a different size for each text file
     uniform_int_distribution<int> maleFirstNamesDistribution(0, maleFirstNames.size() - 1);
@@ -41,7 +54,7 @@ void CompanyTabWidget::initializeData(QString name) {
     int numberOfEmployees = numberOfEmployeesDistribution(generator);
 
     for (int i = 1; i <= numberOfEmployees; i++) {
-        QString id = "E" + QString::number(i);
+        QString employeeId = "E" + QString::number(id);
         QString gender;
         QString firstName;
 
@@ -63,10 +76,13 @@ void CompanyTabWidget::initializeData(QString name) {
         double hourlyWage = QString::number(doubleDistribution(generator), 'f', 2).toDouble();
         int numberOfHours =  numberOfEmployeesDistribution(generator);
 
-        ps->addEmployee(id, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours);
+        ps->addEmployee(employeeId, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours);
+        tableViewModel->insertNewRow(employeeId, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours);
+
+        id++;
     }
 
-    this->setStyleSheet("QTabBar::tab { height: 25px; width: 100px;}");
+    update();
 }
 
 void CompanyTabWidget::createOverviewTab() {
@@ -91,26 +107,68 @@ void CompanyTabWidget::createOverviewTab() {
 
 void CompanyTabWidget::createEmployeeTableTab() {
     tableGroupBox = new QGroupBox("List of Employees");
-    QGridLayout *tableLayout = new QGridLayout();
+    tableLayout = new QGridLayout();
 
     setUpEmployeeTable();
 
     addButton = new QPushButton("Add");
+    generateEmployeesButton = new QPushButton("Generate Employees");
     removeButton = new QPushButton("Remove");
     payAllButton = new QPushButton("Pay All");
 
     connect(addButton, SIGNAL (clicked()), SLOT (toggleAddDialog()));
     connect(employeeTableView,SIGNAL(doubleClicked(const QModelIndex&)), SLOT (toggleEditDialog()));
+    connect(generateEmployeesButton, SIGNAL (clicked()), SLOT(generateRandomEmployees()));
     connect(removeButton, SIGNAL (clicked()), SLOT (removeEmployee()));
     connect(payAllButton, SIGNAL (clicked()), SLOT (payAllEmployees()));
 
-    tableLayout->addWidget(employeeTableView, 0, 0, 10, 3);
+    tableLayout->addWidget(employeeTableView, 0, 0, 10, 4);
     tableLayout->addWidget(addButton, 11, 0);
-    tableLayout->addWidget(removeButton, 11, 1);
-    tableLayout->addWidget(payAllButton, 11, 2);
+    tableLayout->addWidget(generateEmployeesButton, 11, 1);
+    tableLayout->addWidget(removeButton, 11, 2);
+    tableLayout->addWidget(payAllButton, 11, 3);
 
     tableGroupBox->setLayout(tableLayout);
     this->addTab(tableGroupBox, "Employees");
+}
+
+void CompanyTabWidget::createOutputTab() {
+    outputGroupBox = new QGroupBox("Save Options");
+    outputLayout = new QGridLayout();
+
+    saveToFileButton = new QPushButton("Save Company Details To File");
+    connect(saveToFileButton, SIGNAL (clicked()), SLOT(saveToFile()));
+    outputLayout->addWidget(saveToFileButton);
+
+    outputGroupBox->setLayout(outputLayout);
+    this->addTab(outputGroupBox, "Output");
+}
+
+void CompanyTabWidget::saveToFile() {
+    stopTimer();
+
+    QString fileName = ps->getNameOfCompany() + ".csv";
+    QString path = qApp->applicationDirPath() + "/csv/" + fileName;
+    QFile file(path);
+    file.remove();
+
+    if (file.open(QIODevice::ReadWrite | QIODevice::Text)) {
+        QTextStream stream(&file);
+        stream << "name of company,number of employees,amount paid ($)" << endl;
+        stream << ps->getNameOfCompany() + "," + QString::number(ps->getPayrollList().size()) + "," + QString::number(ps->getTotalAmount()) << endl;
+        stream << endl << endl;
+
+        stream << "employee id,first name,last name,gender,job position,street address,city,state,zipcode,hourly wage,hours worked,amount to be paid ($)" << endl;
+
+        for (int i = 0; i < ps->getPayrollList().size(); i++) {
+            Employee e = ps->getPayrollList()[i];
+            stream << e.getEmployeeId() + "," + e.getFirstName() + "," + e.getLastName() + "," + e.getGender() + "," + e.getJobPosition() + "," + e.getStreetAddress() + "," + e.getCity() + "," + e.getState() + "," + e.getZipcode() + "," + QString::number(e.getHourlyWage()) + "," + QString::number(e.getNumberOfHours()) + "," + QString::number(e.getHourlyWage() * e.getNumberOfHours()) << endl;
+        }
+    }
+
+    file.close();
+
+    createTimer();
 }
 
 void CompanyTabWidget::setUpValidators() {
@@ -123,7 +181,6 @@ void CompanyTabWidget::setUpValidators() {
 
     firstNameLineEdit->setValidator(stringValidator);
     lastNameLineEdit->setValidator(stringValidator);
-    jobPositionLineEdit->setValidator(stringWithSpacesValidator);
     streetAddressLineEdit->setValidator(stringWithSpacesValidator);
     zipcodeLineEdit->setValidator(zipcodeValidator);
     hourlyWageLineEdit->setValidator(doubleValidator);
@@ -151,14 +208,13 @@ void CompanyTabWidget::removeEmployee()
     if (employeeTableView->currentIndex().isValid() == false) {
         return;
     }
+
     const QModelIndex &index = employeeTableView->currentIndex();
     const int row = employeeTableView->currentIndex().row();
 
     QString employeeId = tableViewModel->data(tableViewModel->index(row, 0), Qt::DisplayRole).toString();
 
     ps->removeEmployeeById(employeeId);
-
-    qDebug() << row;
 
     tableViewModel->removeRowByRow(employeeId, row);
 
@@ -169,6 +225,8 @@ void CompanyTabWidget::removeEmployee()
 
 // https://stackoverflow.com/questions/17512542/getting-multiple-inputs-from-qinputdialog-in-qtcreator
 void CompanyTabWidget::toggleAddDialog() {
+    stopTimer();
+
     QDialog dialog(this);
     // Use a layout allowing to have a label next to each field
     QFormLayout form(&dialog);
@@ -192,7 +250,10 @@ void CompanyTabWidget::toggleAddDialog() {
 
     jobPositionLabel = new QLabel();
     jobPositionLabel->setText("Job Position");
-    jobPositionLineEdit = new QLineEdit(&dialog);
+    jobPositionComboBox = new QComboBox(&dialog);
+    for (QString position : jobs) {
+        jobPositionComboBox->addItem(position);
+    }
 
     streetAddressLabel = new QLabel();
     streetAddressLabel->setText("Street Address");
@@ -229,7 +290,7 @@ void CompanyTabWidget::toggleAddDialog() {
     form.addRow(firstNameLabel, firstNameLineEdit);
     form.addRow(lastNameLabel, lastNameLineEdit);
     form.addRow(genderComboBoxLabel, genderComboBox);
-    form.addRow(jobPositionLabel, jobPositionLineEdit);
+    form.addRow(jobPositionLabel, jobPositionComboBox);
     form.addRow(streetAddressLabel, streetAddressLineEdit);
     form.addRow(cityLabel, cityComboBox);
     form.addRow(stateLabel, stateComboBox);
@@ -256,7 +317,7 @@ void CompanyTabWidget::toggleAddDialog() {
         QString firstName = firstNameLineEdit->text();
         QString lastName = lastNameLineEdit->text();
         QString gender = genderComboBox->currentText();
-        QString jobPosition = jobPositionLineEdit->text();
+        QString jobPosition = jobPositionComboBox->currentText();
         QString streetAddress = streetAddressLineEdit->text();
         QString city = cityComboBox->currentText();
         QString state = stateComboBox->currentText();
@@ -271,9 +332,13 @@ void CompanyTabWidget::toggleAddDialog() {
 
         id++;
     }
+
+    createTimer();
 }
 
 void CompanyTabWidget::toggleEditDialog() {
+    stopTimer();
+
     if (employeeTableView->currentIndex().isValid() == false) {
         return;
     }
@@ -317,8 +382,11 @@ void CompanyTabWidget::toggleEditDialog() {
 
     jobPositionLabel = new QLabel();
     jobPositionLabel->setText("Job Position");
-    jobPositionLineEdit = new QLineEdit(&dialog);
-    jobPositionLineEdit->setText(oldPosition);
+    jobPositionComboBox = new QComboBox(&dialog);
+    for (QString position : jobs) {
+        jobPositionComboBox->addItem(position);
+    }
+    jobPositionComboBox->setCurrentText(oldPosition);
 
     streetAddressLabel = new QLabel();
     streetAddressLabel->setText("Street Address");
@@ -361,7 +429,7 @@ void CompanyTabWidget::toggleEditDialog() {
     form.addRow(firstNameLabel, firstNameLineEdit);
     form.addRow(lastNameLabel, lastNameLineEdit);
     form.addRow(genderComboBoxLabel, genderComboBox);
-    form.addRow(jobPositionLabel, jobPositionLineEdit);
+    form.addRow(jobPositionLabel, jobPositionComboBox);
     form.addRow(streetAddressLabel, streetAddressLineEdit);
     form.addRow(cityLabel, cityComboBox);
     form.addRow(stateLabel, stateComboBox);
@@ -387,7 +455,7 @@ void CompanyTabWidget::toggleEditDialog() {
         QString firstName = firstNameLineEdit->text();
         QString lastName = lastNameLineEdit->text();
         QString gender = genderComboBox->currentText();
-        QString jobPosition = jobPositionLineEdit->text();
+        QString jobPosition = jobPositionComboBox->currentText();
         QString streetAddress = streetAddressLineEdit->text();
         QString city = cityComboBox->currentText();
         QString state = stateComboBox->currentText();
@@ -403,6 +471,8 @@ void CompanyTabWidget::toggleEditDialog() {
 
         update();
     }
+
+    createTimer();
 }
 
 void CompanyTabWidget::automaticallyFill() {
@@ -447,7 +517,7 @@ void CompanyTabWidget::automaticallyFill() {
     firstNameLineEdit->setText(firstName);
     lastNameLineEdit->setText(lastName);
     genderComboBox->setCurrentText(gender);
-    jobPositionLineEdit->setText(position);
+    jobPositionComboBox->setCurrentText(position);
     streetAddressLineEdit->setText(street);
     cityComboBox->setCurrentText(city);
     stateComboBox->setCurrentText(state);
@@ -457,19 +527,52 @@ void CompanyTabWidget::automaticallyFill() {
 }
 
 void CompanyTabWidget::update() {
+    nameOfCompanyLabel->setText("Company Name: " + ps->getNameOfCompany());
     numberOfEmployeesLabel->setText("Number of Employees: " + QString::number((int) ps->getPayrollList().size()));
     totalAmountPaidLabel->setText("Total Amount Paid: $" + QString::number(ps->getTotalAmount()));
 }
 
-void CompanyTabWidget::payAllEmployees() {
-    ps->issuePaychecks();
+void CompanyTabWidget::addEmployeeByQStringList(QStringList list) {
+    QString employeeId = list[0];
+    QString firstName = list[1];
+    QString lastName = list[2];
+    QString gender = list[3];
+    QString position = list[4];
+    QString street = list[5];
+    QString city = list[6];
+    QString state = list[7];
+    QString zipcode = list[8];
+    double hourlyWage = list[9].toDouble();
+    int numberOfHours = list[10].toInt();
+
+    ps->addEmployee(employeeId, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours);
+    tableViewModel->insertNewRow(employeeId, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours);
+
+    id++;
+
     update();
+}
+
+void CompanyTabWidget::payAllEmployees() {
+    stopTimer();
+
+    ps->issuePaychecks();
+
+    tableViewModel->payAllRows();
+
+    update();
+
+    mainLog->append("Paid all employees in " + ps->getNameOfCompany() + ".");
+
+    createTimer();
 }
 
 void CompanyTabWidget::timerEvent(QTimerEvent *event)
 {
-//        ps->incrementHoursOfEmployees();
-//        update();
+    ps->incrementHoursOfEmployees();
+
+    tableViewModel->incrementHours();
+    // update();
 }
 
 QString CompanyTabWidget::getCurrentTimeStamp() const {

@@ -20,6 +20,7 @@
 #include <QWidget>
 #include <QDialogButtonBox>
 #include <QDialog>
+#include <QFileDialog>
 #include <QDebug>
 
 #include <QString>
@@ -37,23 +38,26 @@ public:
     void loadData();
     QString getCurrentTimeStamp();
 
+    QAction *actionOpenFile;
+    QAction *actionNewCompany;
+    QAction *actionNewFiveCompanies;
     QAction *actionAuthor;
-    QAction *actionNew_Company;
-    QAction *actionNew_FiveCompanies;
-    QAction *actionView_mainLog;
+    QAction *actionViewMainLog;
+    QAction *openFile;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
     QTabWidget *companiesTabWidget;
     QMenuBar *menuBar;
     QMenu *menuAbout;
-    QMenu *menuNew;
+    QMenu *menuFile;
     QMenu *menuMainLog;
 
 private slots:
     void on_actionAuthor_triggered();
-    void on_actionNew_Company_triggered();
-    void on_actionNew_FiveCompanies_triggered();
-    void on_actionView_mainLog_triggered();
+    void on_actionNewCompany_triggered();
+    void on_actionNewFiveCompanies_triggered();
+    void on_actionOpenFile_triggered();
+    void on_actionViewMainLog_triggered();
     void onTabBarDoubleClicked(int index);
     void closeTab(int index);
 };

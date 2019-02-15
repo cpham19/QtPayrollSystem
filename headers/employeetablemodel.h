@@ -17,6 +17,8 @@ public:
     void insertNewRow(QString employeeId, QString firstName, QString lastName, QString gender, QString position, QString streetAddress, QString city, QString state, QString zipcode, double hourlyWage, int numberOfHours);
     void removeRowByRow(QString employeeId, int row);
     void editRow(int row, QString employeeId, QString firstName, QString lastName, QString gender, QString position, QString streetAddress, QString city, QString state, QString zipcode, double hourlyWage, int numberOfHours);
+    void payAllRows();
+    void incrementHours();
 
 
 private:
