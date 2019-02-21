@@ -5,6 +5,7 @@ CompanyTabWidget::CompanyTabWidget(QWidget *parent, QString name): QTabWidget(pa
     initializeData(name);
     createOverviewTab();
     createEmployeeTableTab();
+    createStatisticsTab();
     createOutputTab();
 
     createTimer();
@@ -29,7 +30,7 @@ void CompanyTabWidget::initializeData(QString name) {
     ps = new PayrollSystem();
     ps->setNameOfCompany(name);
 
-    this->setStyleSheet("QTabBar::tab { height: 25px; width: 400px;}");
+    this->setStyleSheet("QTabBar::tab { height: 25px; width: 300px;}");
 }
 
 void CompanyTabWidget::generateRandomEmployees() {
@@ -76,8 +77,8 @@ void CompanyTabWidget::generateRandomEmployees() {
         double hourlyWage = QString::number(doubleDistribution(generator), 'f', 2).toDouble();
         int numberOfHours =  numberOfEmployeesDistribution(generator);
 
-        ps->addEmployee(employeeId, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours);
-        tableViewModel->insertNewRow(employeeId, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours);
+        ps->addEmployee(employeeId, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours, 0.00, 0);
+        tableViewModel->insertNewRow(employeeId, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours, 0.00, 0);
 
         id++;
     }
@@ -132,6 +133,14 @@ void CompanyTabWidget::createEmployeeTableTab() {
     this->addTab(tableGroupBox, "Employees");
 }
 
+void CompanyTabWidget::createStatisticsTab() {
+    statsGroupBox = new QGroupBox("Stats");
+    statsLayout = new QGridLayout();
+
+    statsGroupBox->setLayout(statsLayout);
+    this->addTab(statsGroupBox, "Statistics");
+}
+
 void CompanyTabWidget::createOutputTab() {
     outputGroupBox = new QGroupBox("Save Options");
     outputLayout = new QGridLayout();
@@ -158,11 +167,11 @@ void CompanyTabWidget::saveToFile() {
         stream << ps->getNameOfCompany() + "," + QString::number(ps->getPayrollList().size()) + "," + QString::number(ps->getTotalAmount()) << endl;
         stream << endl << endl;
 
-        stream << "employee id,first name,last name,gender,job position,street address,city,state,zipcode,hourly wage,hours worked,amount to be paid ($)" << endl;
+        stream << "employee id,first name,last name,gender,job position,street address,city,state,zipcode,hourly wage,hours worked,amount to be paid ($),total amount of hours worked,total amount paid ($)" << endl;
 
         for (int i = 0; i < ps->getPayrollList().size(); i++) {
             Employee e = ps->getPayrollList()[i];
-            stream << e.getEmployeeId() + "," + e.getFirstName() + "," + e.getLastName() + "," + e.getGender() + "," + e.getJobPosition() + "," + e.getStreetAddress() + "," + e.getCity() + "," + e.getState() + "," + e.getZipcode() + "," + QString::number(e.getHourlyWage()) + "," + QString::number(e.getNumberOfHours()) + "," + QString::number(e.getHourlyWage() * e.getNumberOfHours()) << endl;
+            stream << e.getEmployeeId() + "," + e.getFirstName() + "," + e.getLastName() + "," + e.getGender() + "," + e.getJobPosition() + "," + e.getStreetAddress() + "," + e.getCity() + "," + e.getState() + "," + e.getZipcode() + "," + QString::number(e.getHourlyWage()) + "," + QString::number(e.getNumberOfHours()) + "," + QString::number(e.getHourlyWage() * e.getNumberOfHours()) + "," + QString::number(e.getTotalNumberOfHours()) + "," + QString::number(e.getTotalAmountPaid())  << endl;
         }
     }
 
@@ -193,6 +202,7 @@ void CompanyTabWidget::setUpEmployeeTable() {
     employeeTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     employeeTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     employeeTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    employeeTableView->setSortingEnabled(true);
     tableViewModel = new EmployeeTableModel(ps);
     employeeTableView->setModel(tableViewModel);
 }
@@ -325,8 +335,8 @@ void CompanyTabWidget::toggleAddDialog() {
         double hourlyWage = hourlyWageLineEdit->text().toDouble();
         int numberOfHours = numberOfHoursLineEdit->text().toInt();
 
-        ps->addEmployee(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
-        tableViewModel->insertNewRow(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
+        ps->addEmployee(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours, 0.00, 0);
+        tableViewModel->insertNewRow(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours, 0.00, 0);
 
         mainLog->append(getCurrentTimeStamp() + " Added Employee# " + employeeId);
 
@@ -361,7 +371,7 @@ void CompanyTabWidget::toggleEditDialog() {
     QFormLayout form(&dialog);
 
     // Add some text above the fields
-    form.addRow(new QLabel("Add an Employee"));
+    form.addRow(new QLabel("Edit an Employee"));
 
     firstNameLabel = new QLabel();
     firstNameLabel->setText("First Name");
@@ -544,9 +554,12 @@ void CompanyTabWidget::addEmployeeByQStringList(QStringList list) {
     QString zipcode = list[8];
     double hourlyWage = list[9].toDouble();
     int numberOfHours = list[10].toInt();
+    int totalNumberOfHours = list[12].toInt();
+    double totalAmountPaid = list[13].toDouble();
 
-    ps->addEmployee(employeeId, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours);
-    tableViewModel->insertNewRow(employeeId, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours);
+
+    ps->addEmployee(employeeId, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours, totalAmountPaid, totalNumberOfHours);
+    tableViewModel->insertNewRow(employeeId, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours, totalAmountPaid, totalNumberOfHours);
 
     id++;
 

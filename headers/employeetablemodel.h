@@ -14,7 +14,7 @@ public:
     //int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     void setUpModel();
-    void insertNewRow(QString employeeId, QString firstName, QString lastName, QString gender, QString position, QString streetAddress, QString city, QString state, QString zipcode, double hourlyWage, int numberOfHours);
+    void insertNewRow(QString employeeId, QString firstName, QString lastName, QString gender, QString position, QString streetAddress, QString city, QString state, QString zipcode, double hourlyWage, int numberOfHours, double totalAmountPaid, int totalNumberOfHours);
     void removeRowByRow(QString employeeId, int row);
     void editRow(int row, QString employeeId, QString firstName, QString lastName, QString gender, QString position, QString streetAddress, QString city, QString state, QString zipcode, double hourlyWage, int numberOfHours);
     void payAllRows();

@@ -1,6 +1,6 @@
 #include "headers/employee.h"
 
-Employee::Employee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, double wage, int hours) : employeeId(id), firstName(fName), lastName(lName), gender(gender), jobPosition(position), streetAddress(address), city(city), state(state), zipcode(zipcode), hourlyWage(wage), numberOfHours(hours) {
+Employee::Employee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, double wage, int hours, double totalPaid, int totalHours) : employeeId(id), firstName(fName), lastName(lName), gender(gender), jobPosition(position), streetAddress(address), city(city), state(state), zipcode(zipcode), hourlyWage(wage), numberOfHours(hours), totalAmountPaid(totalPaid), totalNumberOfHours(totalHours) {
 }
 
 QString Employee::getEmployeeId() const {
@@ -88,4 +88,20 @@ void Employee::setNumberOfHours(int hours) {
 
 double Employee::calcPay() const {
     return hourlyWage * numberOfHours;
+}
+
+void Employee::setTotalNumberOfHours(int hours) {
+    totalNumberOfHours += hours;
+}
+
+int Employee::getTotalNumberOfHours() const {
+    return totalNumberOfHours;
+}
+
+void Employee::setTotalAmountPaid(double amount) {
+    totalAmountPaid += amount;
+}
+
+double Employee::getTotalAmountPaid() const {
+    return totalAmountPaid;
 }

@@ -45,6 +45,7 @@ public:
 
     void createOverviewTab();
     void createEmployeeTableTab();
+    void createStatisticsTab();
     void createOutputTab();
 
     void createTimer();
@@ -71,6 +72,10 @@ public:
     QGridLayout *tableLayout;
     QTableView *employeeTableView;
     EmployeeTableModel *tableViewModel;
+
+    // Statistics Tab
+    QGroupBox *statsGroupBox;
+    QGridLayout *statsLayout;
 
     // Dialog
     QLabel *firstNameLabel;

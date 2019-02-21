@@ -6,7 +6,7 @@ using namespace std;
 
 class Employee {
     public:
-        Employee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, double wage, int hours);
+        Employee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, double wage, int hours, double totalAmountPaid, int totalNumberOfHours);
         QString getEmployeeId() const;
         QString getFirstName() const;
         QString getLastName() const;
@@ -18,6 +18,8 @@ class Employee {
         QString getZipcode() const;
         double getHourlyWage() const;
         int getNumberOfHours() const;
+        int getTotalNumberOfHours() const;
+        double getTotalAmountPaid() const;
         void setFirstName(QString fName);
         void setLastName(QString lName);
         void setGender(QString gender);
@@ -28,6 +30,8 @@ class Employee {
         void setZipcode(QString zipcode);
         void setHourlyWage(double wage);
         void setNumberOfHours(int hours);
+        void setTotalNumberOfHours(int hours);
+        void setTotalAmountPaid(double amount);
         double calcPay() const;
 
     private:
@@ -42,6 +46,8 @@ class Employee {
         QString zipcode;
         double hourlyWage;
         int numberOfHours;
+        int totalNumberOfHours;
+        double totalAmountPaid;
 };
 
 #endif
