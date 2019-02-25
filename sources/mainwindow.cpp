@@ -307,8 +307,9 @@ void MainWindow::on_actionOpenFile_triggered() {
         }
         file.close();
 
+        company->update();
         companiesTabWidget->addTab(company, nameOfTab);
-        mainLog->append(getCurrentTimeStamp() + " Loaded a company '" + nameOfTab + "'.");
+        mainLog->append(getCurrentTimeStamp() + " Loaded a company '" + nameOfTab + "' from " + fileName + ".");
         counter++;
     }
 }

@@ -23,6 +23,8 @@
 #include <QDebug>
 
 #include <QJsonObject>
+#include <QColor>
+#include <QAbstractBarSeries>
 #include <QtCharts>
 #include <QChartView>
 #include <QPieSeries>
@@ -77,6 +79,7 @@ public:
     QPushButton *removeButton;
     QPushButton *generateEmployeesButton;
     QPushButton *payAllButton;
+    QPushButton *timerButton;
 
     // Statistics Tab
     QGroupBox *statsGroupBox;
@@ -124,6 +127,7 @@ private slots:
     void payAllEmployees();
     void tabChanged(int index);
     void saveToFile();
+    void toggleTimerButton();
 
 private:
     int timerId;

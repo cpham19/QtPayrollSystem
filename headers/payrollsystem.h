@@ -8,7 +8,6 @@
 #include <QJsonObject>
 #include "employee.h"
 #include "paycheck.h"
-#include <QDebug>
 
 using namespace std;
 

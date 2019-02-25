@@ -164,18 +164,21 @@ void CompanyTabWidget::createEmployeeTableTab() {
     generateEmployeesButton = new QPushButton("Generate Employees");
     removeButton = new QPushButton("Remove");
     payAllButton = new QPushButton("Pay All");
+    timerButton = new QPushButton("Stop Timer");
 
     connect(addButton, SIGNAL (clicked()), SLOT (toggleAddDialog()));
     connect(employeeTableView,SIGNAL(doubleClicked(const QModelIndex&)), SLOT (toggleEditDialog()));
     connect(generateEmployeesButton, SIGNAL (clicked()), SLOT(generateRandomEmployees()));
     connect(removeButton, SIGNAL (clicked()), SLOT (removeEmployee()));
     connect(payAllButton, SIGNAL (clicked()), SLOT (payAllEmployees()));
+    connect(timerButton, SIGNAL (clicked()), SLOT (toggleTimerButton()));
 
-    tableLayout->addWidget(employeeTableView, 0, 0, 10, 4);
+    tableLayout->addWidget(employeeTableView, 0, 0, 10, 5);
     tableLayout->addWidget(addButton, 11, 0);
     tableLayout->addWidget(generateEmployeesButton, 11, 1);
     tableLayout->addWidget(removeButton, 11, 2);
     tableLayout->addWidget(payAllButton, 11, 3);
+    tableLayout->addWidget(timerButton, 11, 4);
 
     tableGroupBox->setLayout(tableLayout);
     this->addTab(tableGroupBox, "Employees");
@@ -260,6 +263,12 @@ void CompanyTabWidget::createStatisticsTab() {
     positionWidget->setLayout(positionLayout);
 
     averageSalariesSeries = new QBarSeries();
+    averageSalariesSeries->setLabelsPosition(QAbstractBarSeries::LabelsInsideEnd);
+    //averageSalariesSeries->setLabelsAngle(270);
+    averageSalariesSeries->setLabelsFormat("$@value");
+    averageSalariesSeries->setLabelsVisible(true);
+    averageSalariesSeries->setBarWidth(0.8);
+
     averageSalariesChart = new QChart();
     averageSalariesChart->addSeries(averageSalariesSeries);
     averageSalariesChart->setTitle("Average Salaries of Job Positions");
@@ -277,6 +286,8 @@ void CompanyTabWidget::createStatisticsTab() {
     }
 
     axisX = new QBarCategoryAxis();
+    axisX->setTitleText("Job Positions");
+    axisX->setTitleVisible(true);
 
     averageSalariesSeries->append(set);
     if (categories.size() != 0) {
@@ -288,6 +299,8 @@ void CompanyTabWidget::createStatisticsTab() {
     averageSalariesSeries->attachAxis(axisX);
 
     axisY = new QValueAxis();
+    axisY->setTitleText("Average Salary ($)");
+    axisY->setTitleVisible(true);
     axisY->setRange(0,150000.00);
     averageSalariesChart->addAxis(axisY, Qt::AlignLeft);
     averageSalariesSeries->attachAxis(axisY);
@@ -343,6 +356,8 @@ void CompanyTabWidget::saveToFile() {
     }
 
     file.close();
+
+    mainLog->append(getCurrentTimeStamp() + " Saved the company '" + ps->getNameOfCompany() + "' in " + fileName + ".");
 
     createTimer();
 }
@@ -495,11 +510,9 @@ void CompanyTabWidget::update() {
 
     QStringList categories;
     averageSalariesSeries->clear();
-    averageSalariesSeries->setLabelsAngle(270);
-    averageSalariesSeries->setLabelsVisible(true);
+
     QBarSet *set = new QBarSet("");
     QJsonObject salariesObj = ps->getAverageSalariesOfPositions();
-    qDebug() << salariesObj;
     foreach(const QString& key, salariesObj.keys()) {
         double averageSalary = salariesObj.value(key).toDouble();
         categories.append(key);
@@ -531,8 +544,19 @@ void CompanyTabWidget::addEmployeeByQStringList(QStringList list) {
     employeeTableView->tableViewModel->insertNewRow(employeeId, firstName, lastName, gender, position, street, city, state, zipcode, hourlyWage, numberOfHours, totalAmountPaid, totalNumberOfHours);
 
     id++;
+}
 
-    update();
+void CompanyTabWidget::toggleTimerButton() {
+    if (timerButton->text().compare("Start Timer") == 0) {
+        createTimer();
+        timerButton->setText("Stop Timer");
+        mainLog->append(getCurrentTimeStamp() + " User pressed timer button. Timer was stopped.");
+    }
+    else {
+        stopTimer();
+        timerButton->setText("Start Timer");
+        mainLog->append(getCurrentTimeStamp() + " User pressed timer button. Timer is resumed.");
+    }
 }
 
 void CompanyTabWidget::payAllEmployees() {
@@ -544,7 +568,7 @@ void CompanyTabWidget::payAllEmployees() {
 
     update();
 
-    mainLog->append("Paid all employees in " + ps->getNameOfCompany() + ".");
+    mainLog->append(getCurrentTimeStamp() + " Paid all employees in " + ps->getNameOfCompany() + ".");
 
     createTimer();
 }
