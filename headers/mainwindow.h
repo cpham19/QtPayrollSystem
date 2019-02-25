@@ -36,11 +36,11 @@ public:
     void setupUi(QMainWindow *MainWindow);
     void retranslateUi(QMainWindow *MainWindow);
     void loadData();
+    void createFolder();
     QString getCurrentTimeStamp();
 
     QAction *actionOpenFile;
     QAction *actionNewCompany;
-    QAction *actionNewFiveCompanies;
     QAction *actionAuthor;
     QAction *actionViewMainLog;
     QAction *openFile;
@@ -55,7 +55,6 @@ public:
 private slots:
     void on_actionAuthor_triggered();
     void on_actionNewCompany_triggered();
-    void on_actionNewFiveCompanies_triggered();
     void on_actionOpenFile_triggered();
     void on_actionViewMainLog_triggered();
     void onTabBarDoubleClicked(int index);

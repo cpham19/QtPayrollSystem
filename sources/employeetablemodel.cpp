@@ -72,13 +72,13 @@ void EmployeeTableModel::setUpModel() {
                 setData(index, e.getNumberOfHours());
                 break;
             case 11:
-                setData(index, e.calcPay());
+                setData(index, QString::number(e.calcPay(), 'f', 2));
                 break;
             case 12:
                 setData(index, QString::number(e.getTotalNumberOfHours()));
                 break;
             case 13:
-                setData(index, QString::number(e.getTotalAmountPaid()));
+                setData(index, QString::number(e.getTotalAmountPaid(), 'f', 2));
                 break;
             default:
                 break;
@@ -103,9 +103,9 @@ void EmployeeTableModel::insertNewRow(QString employeeId, QString firstName, QSt
     QStandardItem* zipcodeCol = new QStandardItem(zipcode);
     QStandardItem* wageCol = new QStandardItem(QString::number(hourlyWage));
     QStandardItem* hoursCol = new QStandardItem(QString::number(numberOfHours));
-    QStandardItem* amountCol = new QStandardItem(QString::number(hourlyWage * numberOfHours));
+    QStandardItem* amountCol = new QStandardItem(QString::number(hourlyWage * numberOfHours, 'f', 2));
     QStandardItem* totalNumberOfHoursCol = new QStandardItem(QString::number(totalNumberOfHours));
-    QStandardItem* totalAmountPaidCol = new QStandardItem(QString::number(totalAmountPaid));
+    QStandardItem* totalAmountPaidCol = new QStandardItem(QString::number(totalAmountPaid, 'f', 2));
 
     QList<QStandardItem*> newRow;
     newRow.append(employeeIdCol);
@@ -161,7 +161,7 @@ void EmployeeTableModel::editRow(int row, QString employeeId, QString firstName,
             setData(index, numberOfHours);
             break;
         case 11:
-            setData(index, QString::number(hourlyWage * numberOfHours));
+            setData(index, QString::number(hourlyWage * numberOfHours, 'f', 2));
             break;
         default:
             break;
@@ -178,13 +178,13 @@ void EmployeeTableModel::payAllRows() {
                 setData(index, QString::number(0));
                 break;
             case 11:
-                setData(index, QString::number(0.00));
+                setData(index, QString::number(0.00, 'f', 2));
                 break;
             case 12:
                 setData(index, QString::number(ps->getPayrollList()[row].getTotalNumberOfHours()));
                 break;
             case 13:
-                setData(index, QString::number(ps->getPayrollList()[row].getTotalAmountPaid()));
+                setData(index, QString::number(ps->getPayrollList()[row].getTotalAmountPaid(), 'f', 2));
                 break;
             default:
                 break;
@@ -203,7 +203,7 @@ void EmployeeTableModel::incrementHours() {
                 setData(index, QString::number(e.getNumberOfHours()));
                 break;
             case 11:
-                setData(index, QString::number(e.getNumberOfHours() * e.getHourlyWage()));
+                setData(index, QString::number(e.getNumberOfHours() * e.getHourlyWage(), 'f', 2));
                 break;
             default:
                 break;

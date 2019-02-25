@@ -5,8 +5,10 @@
 #include <QString>
 #include <QStringList>
 #include <QStandardItemModel>
+#include <QJsonObject>
 #include "employee.h"
 #include "paycheck.h"
+#include <QDebug>
 
 using namespace std;
 
@@ -23,8 +25,14 @@ class PayrollSystem {
         double getTotalAmount() const;
         void setTotalAmount(double amount);
         void incrementHoursOfEmployees();
-        Employee getEmployeeById(QString id);
+        Employee getEmployeeById(QString id) const;
         QStringList getEmployeesStringList() const;
+        QJsonObject getNumberOfGenders() const;
+        QJsonObject getNumberOfPeopleWithPositions() const;
+        QJsonObject getAverageSalariesOfPositions() const;
+
+        QString getCEO();
+        bool containCEO() const;
 
         void issuePaychecks();
         vector<Employee> getPayrollList() const;

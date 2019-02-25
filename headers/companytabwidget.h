@@ -16,18 +16,23 @@
 #include <QModelIndex>
 #include <QApplication>
 
-#include <QFormLayout>
-#include <QDialog>
-#include <QDialogButtonBox>
-
 #include <QTableView>
 #include <QStandardItemModel>
 #include <QTableWidgetItem>
 #include <QHeaderView>
 #include <QDebug>
 
+#include <QJsonObject>
+#include <QtCharts>
+#include <QChartView>
+#include <QPieSeries>
+#include <QPieSlice>
+#include <QBarSeries>
+
 #include "payrollsystem.h"
-#include "employeetablemodel.h"
+#include "employeetableview.h"
+#include "customdialog.h"
+
 #include <cmath>
 #include <random>
 
@@ -51,10 +56,6 @@ public:
     void createTimer();
     void stopTimer();
 
-    void setUpValidators();
-    void setUpEmployeeInputs();
-    void setUpEmployeeTable();
-
     void update();
     void addEmployeeByQStringList(QStringList list);
 
@@ -64,45 +65,44 @@ public:
     QGroupBox *overviewGroupBox;
     QGridLayout *overviewLayout;
     QLabel *nameOfCompanyLabel;
+    QLabel *nameOfCEOLabel;
     QLabel *numberOfEmployeesLabel;
     QLabel *totalAmountPaidLabel;
 
     // Employee Table Tab
     QGroupBox *tableGroupBox;
     QGridLayout *tableLayout;
-    QTableView *employeeTableView;
-    EmployeeTableModel *tableViewModel;
-
-    // Statistics Tab
-    QGroupBox *statsGroupBox;
-    QGridLayout *statsLayout;
-
-    // Dialog
-    QLabel *firstNameLabel;
-    QLineEdit *firstNameLineEdit;
-    QLabel *lastNameLabel;
-    QLineEdit *lastNameLineEdit;
-    QLabel *genderComboBoxLabel;
-    QComboBox *genderComboBox;
-    QLabel *jobPositionLabel;
-    QComboBox *jobPositionComboBox;
-    QLabel *streetAddressLabel;
-    QLineEdit *streetAddressLineEdit;
-    QLabel *cityLabel;
-    QComboBox *cityComboBox;
-    QLabel *stateLabel;
-    QComboBox *stateComboBox;
-    QLabel *zipcodeLabel;
-    QLineEdit *zipcodeLineEdit;
-    QLabel *hourlyWageLabel;
-    QLineEdit *hourlyWageLineEdit;
-    QLabel *numberOfHoursLabel;
-    QLineEdit *numberOfHoursLineEdit;
-
+    EmployeeTableView *employeeTableView;
     QPushButton *addButton;
     QPushButton *removeButton;
     QPushButton *generateEmployeesButton;
     QPushButton *payAllButton;
+
+    // Statistics Tab
+    QGroupBox *statsGroupBox;
+    QStackedWidget *stackedWidget;
+    QWidget *positionWidget;
+    QWidget *genderWidget;
+    QWidget *averageSalariesWidget;
+    QVBoxLayout *statsLayout;
+    QComboBox *statsComboBox;
+
+    QVBoxLayout *genderLayout;
+    QPieSeries *genderSeries;
+    QChart *genderChart;
+    QChartView *genderChartView;
+
+    QVBoxLayout *positionLayout;
+    QPieSeries *positionSeries;
+    QChart *positionChart;
+    QChartView *positionChartView;
+
+    QVBoxLayout *averageSalariesLayout;
+    QBarSeries *averageSalariesSeries;
+    QChart *averageSalariesChart;
+    QChartView *averageSalariesChartView;
+    QBarCategoryAxis *axisX;
+    QValueAxis *axisY;
 
     PayrollSystem *ps;
     int id;
@@ -123,7 +123,6 @@ private slots:
     void generateRandomEmployees();
     void payAllEmployees();
     void tabChanged(int index);
-    void automaticallyFill();
     void saveToFile();
 
 private:

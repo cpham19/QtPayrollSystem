@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -32,7 +32,9 @@ SOURCES += \
     sources/payrollsystem.cpp \
     sources/companytabwidget.cpp \
     sources/globals.cpp \
-    sources/employeetablemodel.cpp
+    sources/employeetablemodel.cpp \
+    sources/customdialog.cpp \
+    sources/employeetableview.cpp
 
 HEADERS += \
     headers/mainwindow.h \
@@ -41,7 +43,9 @@ HEADERS += \
     headers/payrollsystem.h \
     headers/companytabwidget.h \
     headers/globals.h \
-    headers/employeetablemodel.h
+    headers/employeetablemodel.h \
+    headers/customdialog.h \
+    headers/employeetableview.h
 
 FORMS += \
         mainwindow.ui

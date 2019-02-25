@@ -1,5 +1,6 @@
 #include "headers/payrollsystem.h"
 #include "headers/paycheck.h"
+#include "Headers/employee.h"
 #include <iostream>
 
 using namespace std;
@@ -53,7 +54,7 @@ void PayrollSystem::removeEmployeeById(QString id) {
     }
 }
 
-Employee PayrollSystem::getEmployeeById(QString id) {
+Employee PayrollSystem::getEmployeeById(QString id) const{
     for (int i = 0; i < (int) payrollList.size(); i++) {
         if (payrollList[i].getEmployeeId().compare(id) == 0) {
             return payrollList[i];
@@ -91,7 +92,32 @@ vector<Employee> PayrollSystem::getPayrollList() const {
 }
 
 double PayrollSystem::getTotalAmount() const {
-    return totalAmount;
+    double amount = 0;
+    for (int i = 0; i < (int) payrollList.size(); i++) {
+        amount += payrollList[i].getTotalAmountPaid();
+    }
+
+    return amount;
+}
+
+bool PayrollSystem::containCEO() const {
+    for (Employee e: payrollList) {
+        if (e.getJobPosition().compare("Chief Executive Officer") == 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+QString PayrollSystem::getCEO() {
+    for (int i = 0; i < (int) payrollList.size(); i++) {
+        if (payrollList[i].getJobPosition().compare("Chief Executive Officer") == 0) {
+            return payrollList[i].getFirstName() + " " + payrollList[i].getLastName();
+        }
+    }
+
+    return "None";
 }
 
 void PayrollSystem::setTotalAmount(double amount) {
@@ -104,4 +130,74 @@ void PayrollSystem::incrementHoursOfEmployees() {
         int newHours = oldHours + 1;
         payrollList[i].setNumberOfHours(newHours);
     }
+}
+
+QJsonObject PayrollSystem::getNumberOfGenders() const {
+    QJsonObject obj;
+
+    obj.insert("Male", 0);
+    obj.insert("Female", 0);
+
+    foreach(const QString& key, obj.keys()) {
+        for (Employee e : payrollList) {
+            if (e.getGender().compare(key) == 0) {
+                int oldValue = obj.value(key).toInt();
+                obj[key] = oldValue + 1;
+            }
+        }
+    }
+
+    return obj;
+}
+
+QJsonObject PayrollSystem::getNumberOfPeopleWithPositions() const {
+    QJsonObject obj;
+
+    for (Employee e: payrollList) {
+        if (!obj.contains(e.getJobPosition())) {
+            obj.insert(e.getJobPosition(), 0);
+        }
+    }
+
+    foreach(const QString& key, obj.keys()) {
+        for (Employee e : payrollList) {
+            if (e.getJobPosition().compare(key) == 0) {
+                int oldValue = obj.value(key).toInt();
+                obj[key] = oldValue + 1;
+            }
+        }
+    }
+
+    return obj;
+}
+
+QJsonObject PayrollSystem::getAverageSalariesOfPositions() const {
+    QJsonObject obj;
+
+    for (Employee e: payrollList) {
+        if (!obj.contains(e.getJobPosition())) {
+            obj.insert(e.getJobPosition(), 0.00);
+        }
+    }
+
+    int counter = 0;
+    int hoursPerWeek = 40;
+    int weeks = 4;
+    int months = 12;
+
+    foreach(const QString& key, obj.keys()) {
+        for (Employee e : payrollList) {
+            if (e.getJobPosition().compare(key) == 0) {
+                double oldTotalSalary = obj.value(key).toDouble();
+                double salary = e.getHourlyWage() * hoursPerWeek * weeks * months;
+                obj[key] = QString::number(salary + oldTotalSalary, 'f', 2).toDouble();
+                counter++;
+            }
+        }
+        double totalSalary = obj.value(key).toDouble();
+        obj[key] = QString::number(totalSalary / counter, 'f', 2).toDouble();
+        counter = 0;
+    }
+
+    return obj;
 }

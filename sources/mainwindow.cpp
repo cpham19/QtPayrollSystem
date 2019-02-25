@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
     setupUi(this);
+    createFolder();
     loadData();
 }
 
@@ -158,9 +159,6 @@ void MainWindow::setupUi(QMainWindow *MainWindow) {
     actionNewCompany = new QAction(MainWindow);
     actionNewCompany->setObjectName(QString::fromUtf8("actionNewCompany"));
 
-    actionNewFiveCompanies = new QAction(MainWindow);
-    actionNewFiveCompanies->setObjectName(QString::fromUtf8("actionNewFiveCompanies"));
-
     actionOpenFile = new QAction(MainWindow);
     actionOpenFile->setObjectName(QString::fromUtf8(("actionOpenFile")));
 
@@ -218,7 +216,6 @@ void MainWindow::setupUi(QMainWindow *MainWindow) {
 
     menuFile->addAction(actionOpenFile);
     menuFile->addAction(actionNewCompany);
-    menuFile->addAction(actionNewFiveCompanies);
 
     menuMainLog->addAction(actionViewMainLog);
 
@@ -231,7 +228,6 @@ void MainWindow::retranslateUi(QMainWindow *MainWindow) {
     MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Payroll System", nullptr));
     actionAuthor->setText(QApplication::translate("MainWindow", "Author", nullptr));
     actionNewCompany->setText(QApplication::translate("MainWindow", "New Company", nullptr));
-    actionNewFiveCompanies->setText(QApplication::translate("MainWindow", "New Five Companies", nullptr));
     actionViewMainLog->setText(QApplication::translate("MainWindow", "View Log", nullptr));
     actionOpenFile->setText(QApplication::translate("MainWindow", "Open File", nullptr));
     menuAbout->setTitle(QApplication::translate("MainWindow", "About", nullptr));
@@ -256,19 +252,6 @@ void MainWindow::on_actionNewCompany_triggered()
     company->setObjectName(name);
     companiesTabWidget->addTab(company, name);
     mainLog->append(getCurrentTimeStamp() + " Added a new company '" + name + "'.");
-}
-
-void MainWindow::on_actionNewFiveCompanies_triggered()
-{
-    mainLog->append(getCurrentTimeStamp() + " Adding five new companies!");
-    for (int i = 1; i <= 5; i++) {
-        counter++;
-        QString name = "Company#" + QString::number(counter);
-        CompanyTabWidget *company = new CompanyTabWidget(companiesTabWidget, name);
-        company->setObjectName(name);
-        companiesTabWidget->addTab(company, name);
-        mainLog->append(getCurrentTimeStamp() + " Added a new company '" + name + "'.");
-    }
 }
 
 void MainWindow::on_actionViewMainLog_triggered()
@@ -348,6 +331,12 @@ void MainWindow::onTabBarDoubleClicked(int index) {
         companiesTabWidget->setTabText(index, newName);
         tabWidget->ps->setNameOfCompany(newName);
         tabWidget->nameOfCompanyLabel->setText("Company Name: " + tabWidget->ps->getNameOfCompany());
+    }
+}
+
+void MainWindow::createFolder() {
+    if (!QDir(qApp->applicationDirPath() + "/csv").exists()) {
+        QDir().mkdir(qApp->applicationDirPath() + "/csv");
     }
 }
 
