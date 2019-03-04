@@ -2,7 +2,6 @@
 #define PAYCHECK_H
 
 #include <QString>
-using namespace std;
 
 class Paycheck {
     public:
@@ -11,7 +10,6 @@ class Paycheck {
         QString getFirstName() const;
         QString getLastName() const;
         double getPayCheckAmount() const;
-        friend ostream &operator<<(ostream &output, const Paycheck &p);
     private:
         QString employeeId;
         QString firstName;

@@ -34,7 +34,9 @@ SOURCES += \
     sources/globals.cpp \
     sources/employeetablemodel.cpp \
     sources/customdialog.cpp \
-    sources/employeetableview.cpp
+    sources/employeetableview.cpp \
+    sources/digitalclock.cpp \
+    sources/statisticslayout.cpp
 
 HEADERS += \
     headers/mainwindow.h \
@@ -45,7 +47,9 @@ HEADERS += \
     headers/globals.h \
     headers/employeetablemodel.h \
     headers/customdialog.h \
-    headers/employeetableview.h
+    headers/employeetableview.h \
+    headers/digitalclock.h \
+    headers/statisticslayout.h
 
 FORMS += \
         mainwindow.ui

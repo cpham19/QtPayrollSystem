@@ -175,6 +175,9 @@ void MainWindow::setupUi(QMainWindow *MainWindow) {
     gridLayout->setContentsMargins(11, 11, 11, 11);
     gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
 
+    defaultLabel = new QLabel("To use this application, click 'File' in the menu and either select 'Open File' to open a saved CSV file or create a new company by selecting 'New Company'.");
+    gridLayout->addWidget(defaultLabel, 0, 0);
+
     // Main Tab Widget
     companiesTabWidget = new QTabWidget(centralWidget);
     companiesTabWidget->setObjectName(QString::fromUtf8("companiesTabWidget"));
@@ -184,7 +187,7 @@ void MainWindow::setupUi(QMainWindow *MainWindow) {
     connect(companiesTabWidget, &QTabWidget::tabBarDoubleClicked, this, &MainWindow::onTabBarDoubleClicked);
     connect(companiesTabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
-    gridLayout->addWidget(companiesTabWidget, 0, 0, 1, 1);
+    gridLayout->addWidget(companiesTabWidget, 1, 0);
 
     // mainLog Widget
     mainLog = new QTextEdit();
@@ -251,6 +254,7 @@ void MainWindow::on_actionNewCompany_triggered()
     CompanyTabWidget *company = new CompanyTabWidget(companiesTabWidget, name);
     company->setObjectName(name);
     companiesTabWidget->addTab(company, name);
+    companiesTabWidget->setCurrentWidget(company);
     mainLog->append(getCurrentTimeStamp() + " Added a new company '" + name + "'.");
 }
 

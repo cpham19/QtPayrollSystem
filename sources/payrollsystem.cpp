@@ -17,11 +17,11 @@ void PayrollSystem::setNameOfCompany(QString name) {
     nameOfCompany = name;
 }
 
-void PayrollSystem::addEmployee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, double wage, int hours, double totalAmountPaid, int totalNumberOfHours) {
-    payrollList.push_back(Employee(id, fName, lName, gender, position, address, city, state, zipcode, wage, hours, totalAmountPaid, totalNumberOfHours));
+void PayrollSystem::addEmployee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, int hours, int totalNumberOfHours, int overtimeHours, int totalNumberOfOvertimeHours, double wage, double amountToBePaid, double totalAmountPaid) {
+    payrollList.push_back(Employee(id, fName, lName, gender, position, address, city, state, zipcode, hours, totalNumberOfHours, overtimeHours, totalNumberOfOvertimeHours, wage, amountToBePaid, totalAmountPaid));
 }
 
-void PayrollSystem::editEmployee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, double wage, int hours) {
+void PayrollSystem::editEmployee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, int hours, double wage) {
     for (int i = 0; i < (int) payrollList.size(); i++) {
         if (payrollList[i].getEmployeeId().compare(id) == 0) {
             payrollList[i].setFirstName(fName);
@@ -76,13 +76,19 @@ void PayrollSystem::issuePaychecks() {
     for (int i = 0; i < (int) payrollList.size(); i++) {
         Employee e = payrollList[i];
         Paycheck p = Paycheck(e.getEmployeeId(), e.getFirstName(), e.getLastName(), e.calcPay());
+
+        payrollList[i].setAmountToBePaid(0.00);
+
         totalAmount += p.getPayCheckAmount();
-        payrollList[i].setTotalNumberOfHours(e.getNumberOfHours());
-        payrollList[i].setTotalAmountPaid(p.getPayCheckAmount());
+        double oldTotalAmount = e.getTotalAmountPaid();
+        payrollList[i].setTotalAmountPaid(p.getPayCheckAmount() + oldTotalAmount);
+
+        int oldTotalNumberOfHours = e.getTotalNumberOfHours();
+        int currentNumberOfHours = e.getNumberOfHours();
+        payrollList[i].setTotalNumberOfHours(currentNumberOfHours + oldTotalNumberOfHours);
         payrollList[i].setNumberOfHours(0);
     }
 }
-
 int PayrollSystem::getCompanyId() const {
     return companyId;
 }
@@ -98,6 +104,10 @@ double PayrollSystem::getTotalAmount() const {
     }
 
     return amount;
+}
+
+double PayrollSystem::getBudget() const {
+    return budget;
 }
 
 bool PayrollSystem::containCEO() const {
@@ -124,11 +134,19 @@ void PayrollSystem::setTotalAmount(double amount) {
     totalAmount = amount;
 }
 
+void PayrollSystem::setBudget(double amount) {
+    budget = amount;
+}
+
 void PayrollSystem::incrementHoursOfEmployees() {
-    for (int i = 0; i < (int) payrollList.size(); i++) {
-        int oldHours = payrollList[i].getNumberOfHours();
+    for (int i = 0; i < (int) payrollList.size(); i++) {\
+        Employee e = payrollList[i];
+        int oldHours = e.getNumberOfHours();
         int newHours = oldHours + 1;
         payrollList[i].setNumberOfHours(newHours);
+
+        double newAmountToBePaid = e.calcPay();
+        payrollList[i].setAmountToBePaid(newAmountToBePaid);
     }
 }
 

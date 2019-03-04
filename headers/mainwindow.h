@@ -46,6 +46,7 @@ public:
     QAction *openFile;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
+    QLabel *defaultLabel;
     QTabWidget *companiesTabWidget;
     QMenuBar *menuBar;
     QMenu *menuAbout;

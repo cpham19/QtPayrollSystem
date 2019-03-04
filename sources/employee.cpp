@@ -1,6 +1,6 @@
 #include "headers/employee.h"
 
-Employee::Employee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, double wage, int hours, double totalPaid, int totalHours) : employeeId(id), firstName(fName), lastName(lName), gender(gender), jobPosition(position), streetAddress(address), city(city), state(state), zipcode(zipcode), hourlyWage(wage), numberOfHours(hours), totalAmountPaid(totalPaid), totalNumberOfHours(totalHours) {
+Employee::Employee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, int hours, int totalHours, int overtimeHours, int totalOvertimeHours, double wage, double amountPaid, double totalPaid) : employeeId(id), firstName(fName), lastName(lName), gender(gender), jobPosition(position), streetAddress(address), city(city), state(state), zipcode(zipcode), numberOfHours(hours), totalNumberOfHours(totalHours), numberOfOvertimeHours(overtimeHours), totalNumberOfOvertimeHours(totalOvertimeHours), hourlyWage(wage), amountToBePaid(amountPaid), totalAmountPaid(totalPaid) {
 }
 
 QString Employee::getEmployeeId() const {
@@ -38,12 +38,32 @@ QString Employee::getZipcode() const {
     return zipcode;
 }
 
+int Employee::getNumberOfHours() const {
+    return numberOfHours;
+}
+
+int Employee::getTotalNumberOfHours() const {
+    return totalNumberOfHours;
+}
+
+int Employee::getNumberOfOvertimeHours() const {
+    return numberOfOvertimeHours;
+}
+
+int Employee::getTotalNumberOfOvertimeHours() const {
+    return totalNumberOfOvertimeHours;
+}
+
 double Employee::getHourlyWage() const {
     return hourlyWage;
 }
 
-int Employee::getNumberOfHours() const {
-    return numberOfHours;
+double Employee::getAmountToBePaid() const {
+    return amountToBePaid;
+}
+
+double Employee::getTotalAmountPaid() const {
+    return totalAmountPaid;
 }
 
 void Employee::setFirstName(QString fName) {
@@ -78,30 +98,38 @@ void Employee::setZipcode(QString z) {
     zipcode = z;
 }
 
+
+void Employee::setNumberOfHours(int hours) {
+    numberOfHours = hours;
+}
+
+
+void Employee::setTotalNumberOfHours(int hours) {
+    totalNumberOfHours = hours;
+}
+
+void Employee::setNumberOfOvertimeHours(int hours) {
+    numberOfOvertimeHours = hours;
+}
+
+
+void Employee::setTotalNumberOfOvertimeHours(int hours) {
+    totalNumberOfOvertimeHours = hours;
+}
+
 void Employee::setHourlyWage(double wage) {
     hourlyWage = wage;
 }
 
-void Employee::setNumberOfHours(int hours) {
-    numberOfHours = hours;
+void Employee::setAmountToBePaid(double amount) {
+    amountToBePaid = amount;
 }
 
 double Employee::calcPay() const {
     return hourlyWage * numberOfHours;
 }
 
-void Employee::setTotalNumberOfHours(int hours) {
-    totalNumberOfHours += hours;
-}
-
-int Employee::getTotalNumberOfHours() const {
-    return totalNumberOfHours;
-}
 
 void Employee::setTotalAmountPaid(double amount) {
-    totalAmountPaid += amount;
-}
-
-double Employee::getTotalAmountPaid() const {
-    return totalAmountPaid;
+    totalAmountPaid = amount;
 }

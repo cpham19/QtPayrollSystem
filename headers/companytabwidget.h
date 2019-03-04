@@ -32,10 +32,12 @@
 #include <QBarSeries>
 
 #include "payrollsystem.h"
+#include "statisticslayout.h"
 #include "employeetableview.h"
 #include "customdialog.h"
+#include "globals.h"
+#include "digitalclock.h"
 
-#include <cmath>
 #include <random>
 
 #include <QDateTime>
@@ -55,7 +57,7 @@ public:
     void createStatisticsTab();
     void createOutputTab();
 
-    void createTimer();
+    void startTimer();
     void stopTimer();
 
     void update();
@@ -74,6 +76,9 @@ public:
     // Employee Table Tab
     QGroupBox *tableGroupBox;
     QGridLayout *tableLayout;
+    QLabel *dateLabel;
+    DigitalClock *clock;
+    QLabel *meridiemLabel;
     EmployeeTableView *employeeTableView;
     QPushButton *addButton;
     QPushButton *removeButton;
@@ -84,28 +89,7 @@ public:
     // Statistics Tab
     QGroupBox *statsGroupBox;
     QStackedWidget *stackedWidget;
-    QWidget *positionWidget;
-    QWidget *genderWidget;
-    QWidget *averageSalariesWidget;
-    QVBoxLayout *statsLayout;
-    QComboBox *statsComboBox;
-
-    QVBoxLayout *genderLayout;
-    QPieSeries *genderSeries;
-    QChart *genderChart;
-    QChartView *genderChartView;
-
-    QVBoxLayout *positionLayout;
-    QPieSeries *positionSeries;
-    QChart *positionChart;
-    QChartView *positionChartView;
-
-    QVBoxLayout *averageSalariesLayout;
-    QBarSeries *averageSalariesSeries;
-    QChart *averageSalariesChart;
-    QChartView *averageSalariesChartView;
-    QBarCategoryAxis *axisX;
-    QValueAxis *axisY;
+    StatisticsLayout *statsLayout;
 
     PayrollSystem *ps;
     int id;
@@ -129,11 +113,7 @@ private slots:
     void saveToFile();
     void toggleTimerButton();
 
-private:
-    int timerId;
-
 protected:
-    void timerEvent(QTimerEvent *event);
 
 };
 

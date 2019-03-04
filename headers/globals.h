@@ -19,6 +19,16 @@ extern vector<QString> streetSuffixes;
 extern vector<QString> cities;
 extern vector<QString> zipcodes;
 extern vector<QString> states;
+
+extern vector<int> hours;
+extern vector<int> minutes;
+extern vector<QString> meridiems;
+
+extern vector<int> days;
+extern vector<int> months;
+extern vector<QString> monthStrings;
+extern vector<int> years;
+
 extern QTextEdit *mainLog;
 
 extern int counter;

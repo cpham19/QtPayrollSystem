@@ -17,12 +17,14 @@ class PayrollSystem {
         int getCompanyId() const;
         QString getNameOfCompany() const;
         void setNameOfCompany(QString name);
-        void addEmployee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, double wage, int hours, double totalAmountPaid, int totalNumberOfHours);
-        void editEmployee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, double wage, int hours);
+        void addEmployee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, int hours, int totalNumberOfHours, int overtimeHours, int totalNumberOfOvertimeHours, double wage, double amountToBePaid, double totalAmountPaid);
+        void editEmployee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, int hours, double wage);
         void recordEmployeeHoursById(QString id, int hours);
         void removeEmployeeById(QString id);
         double getTotalAmount() const;
         void setTotalAmount(double amount);
+        double getBudget() const;
+        void setBudget(double amount);
         void incrementHoursOfEmployees();
         Employee getEmployeeById(QString id) const;
         QStringList getEmployeesStringList() const;
@@ -41,6 +43,7 @@ class PayrollSystem {
         int companyId;
         vector<Employee> payrollList;
         double totalAmount;
+        double budget;
 };
 
 #endif /* PAYROLLSYSTEM_H */
