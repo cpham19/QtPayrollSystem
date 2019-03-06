@@ -1,13 +1,14 @@
 #include "headers/customdialog.h"
 #include "headers/globals.h"
 
-CustomDialog::CustomDialog(QWidget *parent) : QDialog(parent) {
+CustomAddAndEditDialog::CustomAddAndEditDialog(QWidget *parent) : QDialog(parent) {
     setWindowTitle("Employee");
-    setUpInputs();
-    setUpValidators();
+    setupInputs();
+    setupValidators();
 }
 
-void CustomDialog::setUpInputs() {
+// Used for creating the form itself
+void CustomAddAndEditDialog::setupInputs() {
     // Use a layout allowing to have a label next to each field
     QFormLayout *form = new QFormLayout(this);
 
@@ -86,7 +87,8 @@ void CustomDialog::setUpInputs() {
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
-void CustomDialog::setUpValidators() {
+// Used for data input validation
+void CustomAddAndEditDialog::setupValidators() {
     // You can try QDoubleValidator and QIntValidator
     QRegExpValidator* integerValidator = new QRegExpValidator(QRegExp("\\d*"));
     QRegExpValidator* doubleValidator = new QRegExpValidator(QRegExp("\\d*\\.?\\d\\d"));
@@ -102,7 +104,8 @@ void CustomDialog::setUpValidators() {
     numberOfHoursLineEdit->setValidator(integerValidator);
 }
 
-void CustomDialog::automaticallyFill() {
+// Used for autofilling fields (if user is lazy)
+void CustomAddAndEditDialog::automaticallyFill() {
     // This will generate different seed for every new tab (apparently rand() is not good in modern times but I needed something to give me a new seed everytime I open a tab)
     mt19937 generator(rand());
     uniform_real_distribution<double> doubleDistribution(1.0,50.0);

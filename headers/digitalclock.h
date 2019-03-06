@@ -1,6 +1,7 @@
 #ifndef DIGITALCLOCK_H
 #define DIGITALCLOCK_H
 
+#include <QMessageBox>
 #include <QLCDNumber>
 #include <QtWidgets>
 #include <iostream>
@@ -15,7 +16,7 @@ class DigitalClock : public QLCDNumber
     Q_OBJECT
 
 public:
-    DigitalClock(QLabel *datelabel, QLabel *meridiemLabel, PayrollSystem *payrollSystem, EmployeeTableView *employeeTableView, QWidget *parent = nullptr);
+    DigitalClock(QPushButton *timerButton, QLabel *datelabel, QLabel *meridiemLabel, PayrollSystem *payrollSystem, EmployeeTableView *employeeTableView, QWidget *parent = nullptr);
     void generateRandomDateAndTime();
     QString getDateString() const;
     void stopTimer();
@@ -24,6 +25,7 @@ public:
     PayrollSystem *ps;
     EmployeeTableView *employeeTableView;
     QTimer *timer;
+    QPushButton *timerButton;
     QLabel *dateLabel;
     QLabel *meridiemLabel;
 

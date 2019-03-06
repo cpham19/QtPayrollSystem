@@ -322,7 +322,7 @@ void MainWindow::onTabBarDoubleClicked(int index) {
     // Get the widget at the tab
     CompanyTabWidget *tabWidget = (CompanyTabWidget *) companiesTabWidget->widget(index);
 
-    // DiamainLog to rename company
+    // Dialog to rename company
     bool ok = true;
     QString newName = QInputDialog::getText (
                 this, tr ("Change Company Name"),

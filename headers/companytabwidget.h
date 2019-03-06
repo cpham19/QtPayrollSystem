@@ -35,6 +35,7 @@
 #include "statisticslayout.h"
 #include "employeetableview.h"
 #include "customdialog.h"
+#include "budgetdialog.h"
 #include "globals.h"
 #include "digitalclock.h"
 
@@ -76,6 +77,8 @@ public:
     // Employee Table Tab
     QGroupBox *tableGroupBox;
     QGridLayout *tableLayout;
+    QLabel *companyBudgetLabel;
+    QPushButton *companyBudgetEditButton;
     QLabel *dateLabel;
     DigitalClock *clock;
     QLabel *meridiemLabel;
@@ -83,6 +86,7 @@ public:
     QPushButton *addButton;
     QPushButton *removeButton;
     QPushButton *generateEmployeesButton;
+    QPushButton *payButton;
     QPushButton *payAllButton;
     QPushButton *timerButton;
 
@@ -106,8 +110,10 @@ public slots:
 private slots:
     void toggleAddDialog();
     void toggleEditDialog();
+    void editBudget();
     void removeEmployee();
     void generateRandomEmployees();
+    void payEmployee();
     void payAllEmployees();
     void tabChanged(int index);
     void saveToFile();

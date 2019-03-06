@@ -1,5 +1,5 @@
-#ifndef CustomDialog_H
-#define CustomDialog_H
+#ifndef CustomAddAndEditDialog_H
+#define CustomAddAndEditDialog_H
 
 #include <QFormLayout>
 #include <QDialog>
@@ -12,13 +12,13 @@
 #include <cmath>
 #include <random>
 
-class CustomDialog : public QDialog
+class CustomAddAndEditDialog : public QDialog
 {
     Q_OBJECT
 public:
-    CustomDialog(QWidget *parent = nullptr);
-    void setUpInputs();
-    void setUpValidators();
+    CustomAddAndEditDialog(QWidget *parent = nullptr);
+    void setupInputs();
+    void setupValidators();
 
     // Dialog
     QLabel *firstNameLabel;
@@ -51,4 +51,4 @@ private:
 
 };
 
-#endif // CustomDialog_H
+#endif // CustomAddAndEditDialog_H

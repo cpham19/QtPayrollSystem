@@ -19,13 +19,13 @@ class PayrollSystem {
         void setNameOfCompany(QString name);
         void addEmployee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, int hours, int totalNumberOfHours, int overtimeHours, int totalNumberOfOvertimeHours, double wage, double amountToBePaid, double totalAmountPaid);
         void editEmployee(QString id, QString fName, QString lName, QString gender, QString position, QString address, QString city, QString state, QString zipcode, int hours, double wage);
-        void recordEmployeeHoursById(QString id, int hours);
         void removeEmployeeById(QString id);
+        void payEmployeeById(QString id);
         double getTotalAmount() const;
         void setTotalAmount(double amount);
         double getBudget() const;
         void setBudget(double amount);
-        void incrementHoursOfEmployees();
+        void incrementHoursOfEmployees(QString dateString);
         Employee getEmployeeById(QString id) const;
         QStringList getEmployeesStringList() const;
         QJsonObject getNumberOfGenders() const;
@@ -34,6 +34,7 @@ class PayrollSystem {
 
         QString getCEO();
         bool containCEO() const;
+        QJsonObject checkForOfficers();
 
         void issuePaychecks();
         vector<Employee> getPayrollList() const;

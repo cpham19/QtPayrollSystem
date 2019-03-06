@@ -36,7 +36,8 @@ SOURCES += \
     sources/customdialog.cpp \
     sources/employeetableview.cpp \
     sources/digitalclock.cpp \
-    sources/statisticslayout.cpp
+    sources/statisticslayout.cpp \
+    sources/budgetdialog.cpp
 
 HEADERS += \
     headers/mainwindow.h \
@@ -49,7 +50,8 @@ HEADERS += \
     headers/customdialog.h \
     headers/employeetableview.h \
     headers/digitalclock.h \
-    headers/statisticslayout.h
+    headers/statisticslayout.h \
+    headers/budgetdialog.h
 
 FORMS += \
         mainwindow.ui

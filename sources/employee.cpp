@@ -58,10 +58,6 @@ double Employee::getHourlyWage() const {
     return hourlyWage;
 }
 
-double Employee::getAmountToBePaid() const {
-    return amountToBePaid;
-}
-
 double Employee::getTotalAmountPaid() const {
     return totalAmountPaid;
 }
@@ -121,12 +117,8 @@ void Employee::setHourlyWage(double wage) {
     hourlyWage = wage;
 }
 
-void Employee::setAmountToBePaid(double amount) {
-    amountToBePaid = amount;
-}
-
 double Employee::calcPay() const {
-    return hourlyWage * numberOfHours;
+    return hourlyWage * (numberOfHours + numberOfOvertimeHours);
 }
 
 

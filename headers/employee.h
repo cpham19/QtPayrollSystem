@@ -20,7 +20,6 @@ class Employee {
         int getNumberOfOvertimeHours() const;
         int getTotalNumberOfOvertimeHours() const;
         double getHourlyWage() const;
-        double getAmountToBePaid() const;
         double getTotalAmountPaid() const;
         void setFirstName(QString fName);
         void setLastName(QString lName);
@@ -33,7 +32,6 @@ class Employee {
         void setNumberOfHours(int hours);
         void setTotalNumberOfHours(int hours);
         void setNumberOfOvertimeHours(int hours);
-        void setAmountToBePaid(double amount);
         void setTotalNumberOfOvertimeHours(int hours);
         void setHourlyWage(double wage);
         void setTotalAmountPaid(double amount);
