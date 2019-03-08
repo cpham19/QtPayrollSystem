@@ -86,22 +86,76 @@ QStringList PayrollSystem::getEmployeesStringList() const{
 }
 
 void PayrollSystem::issuePaychecks() {
+    if (payrollList.size() == 0) {
+        return;
+    }
+
+    int paidEmployees = 0;
+    int unpaidEmployees = 0;
+
+    double amountPaidForMonth = 0.00;
+    double budgetRemaining = budget;
+
     for (int i = 0; i < (int) payrollList.size(); i++) {
         Employee e = payrollList[i];
 
-        totalAmount += e.calcPay();
-        double oldTotalAmount = e.getTotalAmountPaid();
-        payrollList[i].setTotalAmountPaid(e.calcPay() + oldTotalAmount);
+        if (budgetRemaining >= e.calcPay() && (e.getNumberOfHours() != 0 && e.getNumberOfOvertimeHours() != 0)) {
+            budgetRemaining = budgetRemaining - e.calcPay();
+            amountPaidForMonth += e.calcPay();
 
-        int oldTotalNumberOfHours = e.getTotalNumberOfHours();
-        int currentNumberOfHours = e.getNumberOfHours();
-        payrollList[i].setTotalNumberOfHours(currentNumberOfHours + oldTotalNumberOfHours);
-        payrollList[i].setNumberOfHours(0);
+            totalAmount += e.calcPay();
+            double oldTotalAmount = e.getTotalAmountPaid();
+            payrollList[i].setTotalAmountPaid(e.calcPay() + oldTotalAmount);
 
-        int oldTotalNumberOfOvertimeHours = e.getTotalNumberOfOvertimeHours();
-        int currentNumberOfOvertimeHours = e.getNumberOfOvertimeHours();
-        payrollList[i].setTotalNumberOfOvertimeHours(currentNumberOfOvertimeHours + oldTotalNumberOfOvertimeHours);
-        payrollList[i].setNumberOfOvertimeHours(0);
+            int oldTotalNumberOfHours = e.getTotalNumberOfHours();
+            int currentNumberOfHours = e.getNumberOfHours();
+            payrollList[i].setTotalNumberOfHours(currentNumberOfHours + oldTotalNumberOfHours);
+            payrollList[i].setNumberOfHours(0);
+
+            int oldTotalNumberOfOvertimeHours = e.getTotalNumberOfOvertimeHours();
+            int currentNumberOfOvertimeHours = e.getNumberOfOvertimeHours();
+            payrollList[i].setTotalNumberOfOvertimeHours(currentNumberOfOvertimeHours + oldTotalNumberOfOvertimeHours);
+            payrollList[i].setNumberOfOvertimeHours(0);
+
+        }
+        else {
+            unpaidEmployees++;
+        }
+
+    }
+
+    QDialog *dialog = new QDialog();
+    QVBoxLayout *layout = new QVBoxLayout();
+
+    QLabel *amountPaidForMonthLabel = new QLabel();
+    amountPaidForMonthLabel->setText("Amount Paid: $" + QString::number(amountPaidForMonth, 'f', 2));
+    layout->addWidget(amountPaidForMonthLabel);
+
+    QLabel *budgetRemainingLabel = new QLabel();
+    budgetRemainingLabel->setText("Remaining Budget: $" + QString::number(budgetRemaining, 'f', 2));
+    layout->addWidget(budgetRemainingLabel);
+
+    QLabel *paidEmployeesLabel = new QLabel();
+    paidEmployeesLabel->setText("Number of Paid Employees: " + QString::number(paidEmployees));
+    layout->addWidget(paidEmployeesLabel);
+
+    QLabel *unpaidEmployeesLabel = new QLabel();
+    unpaidEmployeesLabel->setText("Number of Unpaid Employees: " + QString::number(unpaidEmployees));
+    layout->addWidget(unpaidEmployeesLabel);
+
+    // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok, Qt::Horizontal, dialog);
+
+    layout->addWidget(buttonBox);
+    connect(buttonBox, SIGNAL(accepted()), dialog, SLOT(accept()));
+
+    dialog->setWindowTitle("Issued Paychecks Details");
+    dialog->setLayout(layout);
+    dialog->setWindowFlags(Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+    dialog->resize(400, 400);
+
+    if (dialog->exec() == QDialog::Accepted) {
+
     }
 }
 int PayrollSystem::getCompanyId() const {

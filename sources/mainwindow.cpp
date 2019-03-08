@@ -294,11 +294,13 @@ void MainWindow::on_actionOpenFile_triggered() {
                QStringList list = line.split(",");
                QString nameOfCompany = list[0];
                QString numberOfEmployees = list[1];
-               QString amountPaid = list[2];
+               QString budget = list[2];
+               QString amountPaid = list[3];
 
                nameOfTab = list[0];
                company->setObjectName(nameOfCompany);
                company->ps->setNameOfCompany(nameOfCompany);
+               company->ps->setBudget(budget.toDouble());
                company->ps->setTotalAmount(amountPaid.toDouble());
            }
            else if (lineNumber >= 6) {

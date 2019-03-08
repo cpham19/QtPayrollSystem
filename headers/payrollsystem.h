@@ -6,12 +6,18 @@
 #include <QStringList>
 #include <QStandardItemModel>
 #include <QJsonObject>
+#include <QDialog>
+#include <QVBoxLayout>
+#include <QDialogButtonBox>
+#include <QLabel>
+#include <QObject>
+
 #include "employee.h"
 #include "paycheck.h"
 
 using namespace std;
 
-class PayrollSystem {
+class PayrollSystem : public QObject {
     public:
         PayrollSystem();
         int getCompanyId() const;

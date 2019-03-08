@@ -31,11 +31,13 @@ void DigitalClock::generateRandomDateAndTime() {
     uniform_int_distribution<int> monthsDistribution(0, months.size() - 1);
     uniform_int_distribution<int> yearsDistribution(2000, 2020);
 
-    month = months[monthsDistribution(generator)];
+    //month = months[monthsDistribution(generator)];
+    month = 12;
+
     //uniform_int_distribution<int> daysDistribution(1, days[month]);
     //day = daysDistribution(generator);
-    day = 1;
-    year = yearsDistribution(generator);
+    day = 27;
+    year = yearsDistribution(generator);;
 
     // Each distribution has a different size for each text file
     uniform_int_distribution<int> hoursDistribution(0, hours.size() - 1);
@@ -52,12 +54,7 @@ void DigitalClock::generateRandomDateAndTime() {
 }
 
 QString DigitalClock::getDateString() const {
-    if (month == 12) {
-       return monthStrings[0] + " " + QString::number(day) + ", " + QString::number(year);
-    }
-    else {
-        return monthStrings[month] + " " + QString::number(day) + ", " + QString::number(year);
-    }
+    return monthStrings[month - 1] + " " + QString::number(day) + ", " + QString::number(year);
 }
 
 void DigitalClock::showTime()
@@ -74,7 +71,13 @@ void DigitalClock::showTime()
             meridiem = "AM";
 
             // The last day of the month
-            if (day == days[months[month - 1]]) {
+            // vector<int> months{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+            // vector<int> days{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+            // vector<int> hours{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+
+            // if month = 12, then months[month -1] = 12, then days[months[month- 1] - 1] = 31
+            // if month = 1, then months[month - 1] = 1, then days[months[month - 1] -1 ] = 1
+            if (day == days[months[month - 1] - 1]) {
                 day = 1;
 
                 if (month == 12) {
@@ -82,14 +85,13 @@ void DigitalClock::showTime()
                     year++;
                 }
                 else {
-                    stopTimer();
-                    timerButton->setText("Start Timer");
                     month++;
-                    QMessageBox msgBox;
-                    msgBox.setWindowTitle("Time Passed");
-                    msgBox.setText("A month has passed. Either pay your employees or continue to make them work by starting the timer.");
-                    msgBox.exec();
                 }
+
+                stopTimer();
+                timerButton->setText("Start Timer");
+                ps->issuePaychecks();
+                employeeTableView->tableViewModel->payAllRows();
             }
             else {
                 day++;

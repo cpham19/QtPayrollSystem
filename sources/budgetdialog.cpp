@@ -2,6 +2,7 @@
 
 BudgetDialog::BudgetDialog(QWidget *parent) : QDialog(parent) {
     setWindowTitle("Edit Budget");
+    setWindowFlags(Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
     setupInputs();
     setupValidators();
 }

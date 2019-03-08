@@ -270,7 +270,7 @@ void CompanyTabWidget::saveToFile() {
 
         QString columns1 = "name of company,number of employees,budget per month,amount paid ($)";
         stream << columns1 << endl;
-        stream << ps->getNameOfCompany() + "," + QString::number(ps->getPayrollList().size()) + "," + QString::number(ps->getBudget()) + "," + QString::number(ps->getTotalAmount()) << endl;
+        stream << ps->getNameOfCompany() + "," + QString::number(ps->getPayrollList().size()) + "," + QString::number(ps->getBudget(), 'f', 2) + "," + QString::number(ps->getTotalAmount(), 'f', 2) << endl;
         stream << endl << endl;
 
         stream << "employee id,first name,last name,gender,job position,street address,city,state,zipcode,hours worked,total hours worked,overtimehours worked,total overtimehours worked,hourly wage,amount to be paid ($),total amount paid ($)" << endl;
@@ -316,25 +316,25 @@ void CompanyTabWidget::removeEmployee()
 // https://stackoverflow.com/questions/17512542/getting-multiple-inputs-from-qinputdialog-in-qtcreator
 // Used for adding employee
 void CompanyTabWidget::toggleAddDialog() {
-    CustomAddAndEditDialog dialog(this);
+    CustomAddAndEditDialog *dialog = new CustomAddAndEditDialog();
 
     // Show the dialog as modal
-    if (dialog.exec() == QDialog::Accepted) {
+    if (dialog->exec() == QDialog::Accepted) {
         // If the user didn't dismiss the dialog, do something with the fields
         QString employeeId = "E" + QString::number(id);
-        QString firstName = dialog.firstNameLineEdit->text();
-        QString lastName = dialog.lastNameLineEdit->text();
-        QString gender = dialog.genderComboBox->currentText();
-        QString jobPosition = dialog.jobPositionComboBox->currentText();
-        QString streetAddress = dialog.streetAddressLineEdit->text();
-        QString city = dialog.cityComboBox->currentText();
-        QString state = dialog.stateComboBox->currentText();
-        QString zipcode = dialog.zipcodeLineEdit->text();
-        int numberOfHours = dialog.numberOfHoursLineEdit->text().toInt();
+        QString firstName = dialog->firstNameLineEdit->text();
+        QString lastName = dialog->lastNameLineEdit->text();
+        QString gender = dialog->genderComboBox->currentText();
+        QString jobPosition = dialog->jobPositionComboBox->currentText();
+        QString streetAddress = dialog->streetAddressLineEdit->text();
+        QString city = dialog->cityComboBox->currentText();
+        QString state = dialog->stateComboBox->currentText();
+        QString zipcode = dialog->zipcodeLineEdit->text();
+        int numberOfHours = dialog->numberOfHoursLineEdit->text().toInt();
         int totalNumberOfHours = 0;
         int numberOfOvertimeHours =  0;
         int totalNumberOfOvertimeHours = 0;
-        double hourlyWage = dialog.hourlyWageLineEdit->text().toDouble();
+        double hourlyWage = dialog->hourlyWageLineEdit->text().toDouble();
         double amountToBePaid = 0.00;
         double totalAmountPaid = 0.00;
 
@@ -372,32 +372,32 @@ void CompanyTabWidget::toggleEditDialog() {
     int oldNumberOfHours = employeeTableView->tableViewModel->data(employeeTableView->tableViewModel->index(row, 9), Qt::DisplayRole).toInt();
     double oldHourlyWage = employeeTableView->tableViewModel->data(employeeTableView->tableViewModel->index(row, 13), Qt::DisplayRole).toDouble();
 
-    CustomAddAndEditDialog dialog(this);
+    CustomAddAndEditDialog *dialog = new CustomAddAndEditDialog();
 
-    dialog.firstNameLineEdit->setText(oldFirstName);
-    dialog.lastNameLineEdit->setText(oldLastName);
-    dialog.genderComboBox->setCurrentText(oldGender);
-    dialog.jobPositionComboBox->setCurrentText(oldPosition);
-    dialog.streetAddressLineEdit->setText(oldStreet);
-    dialog.cityComboBox->setCurrentText(oldCity);
-    dialog.stateComboBox->setCurrentText(oldState);
-    dialog.zipcodeLineEdit->setText(oldZipcode);
-    dialog.numberOfHoursLineEdit->setText(QString::number(oldNumberOfHours));
-    dialog.hourlyWageLineEdit->setText(QString::number(oldHourlyWage));
+    dialog->firstNameLineEdit->setText(oldFirstName);
+    dialog->lastNameLineEdit->setText(oldLastName);
+    dialog->genderComboBox->setCurrentText(oldGender);
+    dialog->jobPositionComboBox->setCurrentText(oldPosition);
+    dialog->streetAddressLineEdit->setText(oldStreet);
+    dialog->cityComboBox->setCurrentText(oldCity);
+    dialog->stateComboBox->setCurrentText(oldState);
+    dialog->zipcodeLineEdit->setText(oldZipcode);
+    dialog->numberOfHoursLineEdit->setText(QString::number(oldNumberOfHours));
+    dialog->hourlyWageLineEdit->setText(QString::number(oldHourlyWage));
 
     // Show the dialog as modal
-    if (dialog.exec() == QDialog::Accepted) {
+    if (dialog->exec() == QDialog::Accepted) {
         // If the user didn't dismiss the dialog, do something with the fields
-        QString firstName = dialog.firstNameLineEdit->text();
-        QString lastName = dialog.lastNameLineEdit->text();
-        QString gender = dialog.genderComboBox->currentText();
-        QString jobPosition = dialog.jobPositionComboBox->currentText();
-        QString streetAddress = dialog.streetAddressLineEdit->text();
-        QString city = dialog.cityComboBox->currentText();
-        QString state = dialog.stateComboBox->currentText();
-        QString zipcode = dialog.zipcodeLineEdit->text();
-        int numberOfHours = dialog.numberOfHoursLineEdit->text().toInt();
-        double hourlyWage = dialog.hourlyWageLineEdit->text().toDouble();
+        QString firstName = dialog->firstNameLineEdit->text();
+        QString lastName = dialog->lastNameLineEdit->text();
+        QString gender = dialog->genderComboBox->currentText();
+        QString jobPosition = dialog->jobPositionComboBox->currentText();
+        QString streetAddress = dialog->streetAddressLineEdit->text();
+        QString city = dialog->cityComboBox->currentText();
+        QString state = dialog->stateComboBox->currentText();
+        QString zipcode = dialog->zipcodeLineEdit->text();
+        int numberOfHours = dialog->numberOfHoursLineEdit->text().toInt();
+        double hourlyWage = dialog->hourlyWageLineEdit->text().toDouble();
 
         ps->editEmployee(employeeId, firstName, lastName, gender, jobPosition, streetAddress, city, state, zipcode, hourlyWage, numberOfHours);
 
@@ -415,6 +415,7 @@ void CompanyTabWidget::update() {
     nameOfCEOLabel->setText("Chief Executive Officer: " + ps->getCEO());
     numberOfEmployeesLabel->setText("Number of Employees: " + QString::number((int) ps->getPayrollList().size()));
     totalAmountPaidLabel->setText("Total Amount Paid: $" + QString::number(ps->getTotalAmount(), 'f', 2));
+    companyBudgetLabel->setText("Budget: $" + QString::number(ps->getBudget(), 'f', 2));
 
     statsLayout->update();
 }
@@ -461,18 +462,16 @@ void CompanyTabWidget::toggleTimerButton() {
 // Used for editting budget
 void CompanyTabWidget::editBudget() {
     // Dialog to edit budget
-    BudgetDialog dialog(this);
-    dialog.budgetLineEdit->setText(QString::number(ps->getBudget(), 'f', 2));
+    BudgetDialog *dialog = new BudgetDialog();
+    dialog->budgetLineEdit->setText(QString::number(ps->getBudget(), 'f', 2));
 
     // Show the dialog as modal
-    if (dialog.exec() == QDialog::Accepted) {
+    if (dialog->exec() == QDialog::Accepted) {
         // If the user didn't dismiss the dialog, do something with the fields
-        double newBudget = dialog.budgetLineEdit->text().toDouble();
+        double newBudget = dialog->budgetLineEdit->text().toDouble();
         mainLog->append(getCurrentTimeStamp() + " Editting company budget from $'" + QString::number(ps->getBudget(), 'f', 2) + "' to " + "'$" + QString::number(newBudget, 'f', 2) + "'.");
         ps->setBudget(newBudget);
         companyBudgetLabel->setText("Budget: $" + QString::number(ps->getBudget(), 'f', 2));
-
-        update();
     }
 }
 

@@ -2,7 +2,8 @@
 #include "headers/globals.h"
 
 CustomAddAndEditDialog::CustomAddAndEditDialog(QWidget *parent) : QDialog(parent) {
-    setWindowTitle("Employee");
+    setWindowTitle("Employee Fields");
+    setWindowFlags(Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
     setupInputs();
     setupValidators();
 }
