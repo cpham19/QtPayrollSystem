@@ -65,7 +65,6 @@ OTHER_FILES += \
         txt/cities.txt \
         txt/states.txt \
         txt/zipcodes.txt
-	
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -177,7 +177,7 @@ void CompanyTabWidget::createOverviewTab() {
     overviewLayout->addWidget(totalAmountPaidLabel, 3, 0);
 
     overviewGroupBox->setLayout(overviewLayout);
-    this->addTab(overviewGroupBox, "Overview");
+    this->addTab(overviewGroupBox, QIcon(qApp->applicationDirPath() + "/img/overview.ico"), "Overview");
 }
 
 //. Used for creating employee table tab
@@ -229,7 +229,7 @@ void CompanyTabWidget::createEmployeeTableTab() {
     tableLayout->addWidget(clock, 0, 3);
 
     tableGroupBox->setLayout(tableLayout);
-    this->addTab(tableGroupBox, "Employees");
+    this->addTab(tableGroupBox, QIcon(qApp->applicationDirPath() + "/img/employee.ico"), "Employees");
 }
 
 // Used for creating statistics tab
@@ -239,7 +239,7 @@ void CompanyTabWidget::createStatisticsTab() {
 
     statsGroupBox->setLayout(statsLayout);
 
-    this->addTab(statsGroupBox, "Statistics");
+    this->addTab(statsGroupBox, QIcon(qApp->applicationDirPath() + "/img/statistics.ico"), "Statistics");
 }
 
 // Used for creating the save details tab
@@ -252,7 +252,7 @@ void CompanyTabWidget::createOutputTab() {
     outputLayout->addWidget(saveToFileButton);
 
     outputGroupBox->setLayout(outputLayout);
-    this->addTab(outputGroupBox, "Output");
+    this->addTab(outputGroupBox, QIcon(qApp->applicationDirPath() + "/img/save.ico"), "Output");
 }
 
 // Used for saving details to csv files

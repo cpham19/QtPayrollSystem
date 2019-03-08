@@ -31,12 +31,11 @@ void DigitalClock::generateRandomDateAndTime() {
     uniform_int_distribution<int> monthsDistribution(0, months.size() - 1);
     uniform_int_distribution<int> yearsDistribution(2000, 2020);
 
-    //month = months[monthsDistribution(generator)];
-    month = 12;
+    month = months[monthsDistribution(generator)];
 
     //uniform_int_distribution<int> daysDistribution(1, days[month]);
     //day = daysDistribution(generator);
-    day = 27;
+    day = 1;
     year = yearsDistribution(generator);;
 
     // Each distribution has a different size for each text file
